@@ -1,0 +1,111 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#173f35">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="班车查询">
+  <title>班车查询</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon.svg">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="hero">
+      <div class="hero-head">
+        <div>
+          <p class="eyebrow">班车查询</p>
+          <h1>最近一班</h1>
+          <p class="hero-copy">选择上车点，直接看现在或指定时间最近能坐上的车。</p>
+        </div>
+
+        <div class="clock-card">
+          <div class="clock-time" id="currentTime">--:--</div>
+          <p class="clock-date" id="currentDate">--</p>
+        </div>
+      </div>
+
+      <div class="query-bar">
+        <div class="query-mode" role="tablist" aria-label="选择查询模式">
+          <button class="mode-button active" data-query-mode="now" type="button">按现在</button>
+          <button class="mode-button" data-query-mode="manual" type="button">手动时间</button>
+        </div>
+
+        <label class="manual-field is-hidden" id="manualField">
+          <span class="field-label">查询时间</span>
+          <input class="time-input" id="queryDateTime" type="datetime-local">
+        </label>
+      </div>
+
+      <div class="query-meta">
+        <span class="schedule-badge" id="activeScheduleLabel">--</span>
+        <span class="query-reference" id="queryReferenceText">--</span>
+      </div>
+      <p class="query-note" id="queryReferenceNote">--</p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>上车点</h2>
+      </div>
+
+      <div class="stop-toggle" role="tablist" aria-label="选择上车点">
+        <button class="stop-button active" data-stop="dorm" type="button">宿舍</button>
+        <button class="stop-button" data-stop="college" type="button">学院</button>
+      </div>
+
+      <article class="next-card">
+        <div class="next-top">
+          <p class="card-label" id="selectedStopLabel">宿舍最近一班</p>
+          <p class="next-day" id="nextDayLabel">--</p>
+        </div>
+
+        <div class="next-time" id="nextTime">--:--</div>
+        <p class="next-line" id="nextLineLabel">--</p>
+        <p class="wait-text" id="waitText">--</p>
+        <p class="trip-meta" id="tripMeta">--</p>
+        <p class="walk-warning is-hidden" id="walkWarning">--</p>
+        <p class="crowd-note is-hidden" id="crowdNote">--</p>
+        <p class="secondary-trip" id="secondaryTrip">--</p>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>后面几班</h2>
+      </div>
+
+      <div class="timeline" id="timeline"></div>
+      <p class="timeline-note" id="timelineNote">--</p>
+    </section>
+
+    <section class="panel feedback-panel">
+      <div class="panel-head">
+        <h2>意见收集</h2>
+      </div>
+      <form class="feedback-form" id="feedbackForm">
+        <textarea class="feedback-input" id="feedbackText" rows="4" placeholder="比如：某些时间点还想加提醒，或者界面哪里不顺手"></textarea>
+        <input class="time-input" id="feedbackContact" type="text" placeholder="可选：联系方式，方便我们回复您">
+        <button class="submit-button" type="submit">提交意见</button>
+      </form>
+      <p class="feedback-status" id="feedbackStatus">v5.0</p>
+    </section>
+
+    <details class="notes">
+      <summary>说明</summary>
+      <div class="notes-body">
+        <p>已录入环线、线路 2 / 5 / 7 / 8 的周一至周四、周五、周六、周日规则。</p>
+        <p>时间偏移经验：线路 2 为佳园到宿舍 20 分钟；线路 5 为景园到宿舍 15 分钟；线路 7 为四号院到宿舍 40 分钟；线路 8 为一号院到宿舍 25 分钟，宿舍到学院 8 分钟。</p>
+        <p>对于环线，发车到学院时间偏移设置为 12 分钟。</p>
+      </div>
+    </details>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
