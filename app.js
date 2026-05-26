@@ -4,8 +4,11 @@
   templateId: "template_hfn70fr",
 };
 
-const COLLEGE_OFFSET_SPECIAL_MINUTES = 12;
+const COLLEGE_OFFSET_SPECIAL_MINUTES = 7;
 const STOP_STORAGE_KEY = "bus-stop-preference";
+const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-05-18";
+const UPDATE_NOTICE_DISMISSED_VALUE = "dismissed";
+const UPDATE_NOTICE_EXPIRES_AT = new Date(2026, 5, 1, 0, 0, 0, 0).getTime();
 
 const STOPS = {
   dorm: {
@@ -27,8 +30,8 @@ const DAY_PROFILES = {
 
 const CROWD_RULES = {
   dorm: {
-    mild: ["08:12", "08:24", "14:12"],
-    high: ["08:36", "08:48", "14:24", "14:36", "14:48"],
+    mild: ["08:10", "08:20", "14:12"],
+    high: ["08:30", "08:40", "08:50", "14:24", "14:36", "14:48"],
   },
   college: {
     mild: ["17:00"],
@@ -54,21 +57,21 @@ const SCHEDULES = {
   everyday: [
     createService("环线班车", "宿舍", "学院", [
       "07:30", "07:40", "07:50",
-      "08:00", "08:12", "08:24",
-      "08:36", "08:48", "09:00",
-      "09:12", "09:24", "09:36",
-      "09:48", "10:00", "10:12",
-      "10:24", "10:36", "10:48",
-      "11:00", "11:12", "11:24",
-      "11:36", "11:48", "12:00",
-      "12:15", "12:25", "12:40",
+      "08:00", "08:10", "08:20",
+      "08:30", "08:40", "08:50",
+      "09:00", "09:12", "09:24",
+      "09:36", "09:48", "10:00",
+      "10:15",
+      "10:30", "10:45", "11:00",
+      "11:15", "11:30", "11:40",
+      "11:50", "12:10", "12:25",
+      "12:40",
       "14:00", "14:12", "14:24",
       "14:36", "14:48", "15:00",
-      "15:15", "15:30", "15:45",
-      "16:00", "16:12", "16:24",
-      "16:35", "16:48", "17:00",
-      "17:12", "17:24", "17:35",
-      "17:48", "18:00", "18:15",
+      "15:20", "15:40", "16:00",
+      "16:15", "16:30", "16:45",
+      "17:00", "17:15", "17:30",
+      "17:45", "18:00", "18:15",
       "18:30", "18:45", "19:00",
       "19:15", "19:30", "19:45",
       "20:00", "20:15", "20:30",
@@ -78,6 +81,12 @@ const SCHEDULES = {
     ], {
       dorm: 0,
       college: COLLEGE_OFFSET_SPECIAL_MINUTES,
+    }),
+    createService("就餐专线v2", "学院", "二食堂", [
+      "11:30", "11:50", "12:10", "12:30",
+      "16:30", "16:50", "17:10", "17:30", "17:50"
+    ], {
+      college: 0,
     }),
   ],
   monThu: [
@@ -148,6 +157,9 @@ const elements = {
   feedbackText: document.getElementById("feedbackText"),
   feedbackContact: document.getElementById("feedbackContact"),
   feedbackStatus: document.getElementById("feedbackStatus"),
+  updateNotice: document.getElementById("updateNotice"),
+  updateNoticeClose: document.getElementById("updateNoticeClose"),
+  updateNoticeDismiss: document.getElementById("updateNoticeDismiss"),
   stopButtons: [...document.querySelectorAll("[data-stop]")],
   modeButtons: [...document.querySelectorAll("[data-query-mode]")],
 };
@@ -179,6 +191,51 @@ function isEmailJsConfigured() {
     && EMAILJS_CONFIG.publicKey !== "YOUR_EMAILJS_PUBLIC_KEY"
     && EMAILJS_CONFIG.serviceId !== "YOUR_EMAILJS_SERVICE_ID"
     && EMAILJS_CONFIG.templateId !== "YOUR_EMAILJS_TEMPLATE_ID";
+}
+
+function shouldShowUpdateNotice() {
+  return Date.now() < UPDATE_NOTICE_EXPIRES_AT
+    && window.localStorage.getItem(UPDATE_NOTICE_STORAGE_KEY) !== UPDATE_NOTICE_DISMISSED_VALUE;
+}
+
+function showUpdateNotice() {
+  elements.updateNotice.hidden = false;
+  document.body.classList.add("notice-open");
+  elements.updateNoticeClose.focus();
+}
+
+function hideUpdateNotice() {
+  elements.updateNotice.hidden = true;
+  document.body.classList.remove("notice-open");
+}
+
+function dismissUpdateNoticePermanently() {
+  window.localStorage.setItem(UPDATE_NOTICE_STORAGE_KEY, UPDATE_NOTICE_DISMISSED_VALUE);
+  hideUpdateNotice();
+}
+
+function initializeUpdateNotice() {
+  if (!elements.updateNotice) {
+    return;
+  }
+
+  elements.updateNoticeClose.addEventListener("click", hideUpdateNotice);
+  elements.updateNoticeDismiss.addEventListener("click", dismissUpdateNoticePermanently);
+  elements.updateNotice.addEventListener("click", (event) => {
+    if (event.target.dataset.updateNoticeClose !== undefined) {
+      hideUpdateNotice();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !elements.updateNotice.hidden) {
+      hideUpdateNotice();
+    }
+  });
+
+  if (shouldShowUpdateNotice()) {
+    showUpdateNotice();
+  }
 }
 
 function readInitialStop() {
@@ -635,6 +692,7 @@ elements.queryDateTime.addEventListener("input", () => {
 elements.feedbackForm.addEventListener("submit", handleFeedbackSubmit);
 
 render();
+initializeUpdateNotice();
 setInterval(() => {
   renderClock();
   if (state.queryMode === "now") {

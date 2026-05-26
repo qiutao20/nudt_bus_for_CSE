@@ -421,6 +421,67 @@ h2 {
   margin-top: 8px;
 }
 
+.update-notice {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.update-notice-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(31, 45, 42, 0.46);
+}
+
+.update-notice-card {
+  position: relative;
+  width: min(420px, 100%);
+  padding: 22px;
+  border: 1px solid rgba(23, 63, 53, 0.14);
+  border-radius: var(--radius-lg);
+  background: #fffdf8;
+  box-shadow: 0 24px 70px rgba(23, 63, 53, 0.24);
+}
+
+.update-notice-card h2 {
+  margin-top: 8px;
+  line-height: 1.35;
+}
+
+.update-notice-copy {
+  margin: 10px 0 0;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.update-notice-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.notice-secondary-button {
+  padding: 14px;
+  border: 1px solid rgba(23, 63, 53, 0.16);
+  border-radius: var(--radius-md);
+  background: #fffdf8;
+  color: var(--brand);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.notice-primary-button {
+  min-width: 94px;
+}
+
+body.notice-open {
+  overflow: hidden;
+}
+
 @media (max-width: 640px) {
   .hero,
   .panel,
@@ -436,5 +497,9 @@ h2 {
 
   .clock-card {
     width: 100%;
+  }
+
+  .update-notice-actions {
+    flex-direction: column-reverse;
   }
 }
