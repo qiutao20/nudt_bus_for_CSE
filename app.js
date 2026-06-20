@@ -50,6 +50,7 @@ const CROWD_RULES = {
 };
 
 const DORM_WALK_LINES = new Set(["线路2", "线路5", "线路7", "线路8"]);
+const ORIGIN_VISIBLE_LINES = new Set(["环线1路", "环线3路(观光车)", "就餐专线v2"]);
 const DORM_WALK_NOTICE = "提醒：这班车的上车点不在宿舍楼下，从宿舍出发需要先步行到对应站点。";
 
 function createService(lineLabel, origin, destination, departures, stopOffsets) {
@@ -83,7 +84,7 @@ const WEEKEND_HOLIDAY_SIGHTSEEING_SERVICES = [
 
 const SCHEDULES = {
   everyday: [
-    createService("环线班车", "宿舍", "学院", [
+    createService("环线1路", "宿舍", "学院", [
       "07:30", "07:40", "07:50",
       "08:00", "08:10", "08:20",
       "08:30", "08:40", "08:50",
@@ -401,7 +402,7 @@ function buildDateAtTime(date, hhmm) {
 }
 
 function getCrowdLevel(lineLabel, stopId, departureTime) {
-  if (lineLabel !== "环线班车") {
+  if (lineLabel !== "环线1路") {
     return null;
   }
 
@@ -516,6 +517,14 @@ function buildBoardingText(trip, stopId) {
   return `${STOPS[stopId].label} ${formatTime(trip.boardingDate)} 可上车`;
 }
 
+function buildDepartureText(trip) {
+  if (ORIGIN_VISIBLE_LINES.has(trip.lineLabel)) {
+    return `起点为${trip.origin} ${trip.departureTime} 发车`;
+  }
+
+  return `起点 ${trip.departureTime} 发车`;
+}
+
 function getWalkWarning(trip, stopId) {
   if (stopId !== "dorm") {
     return "";
@@ -575,14 +584,14 @@ function renderMainTrip(queryDate, stopId) {
   elements.nextDayLabel.textContent = getReferenceDayLabel(nextTrip.boardingDate, queryDate);
   elements.nextTime.textContent = formatTime(nextTrip.boardingDate);
   elements.nextLineLabel.textContent = `${nextTrip.lineLabel} · ${nextTrip.routeLabel}`;
-  elements.waitText.textContent = `${describeWait(queryDate, nextTrip.boardingDate)} · ${buildBoardingText(nextTrip, stopId)} · 起点 ${nextTrip.departureTime} 发车`;
+  elements.waitText.textContent = `${describeWait(queryDate, nextTrip.boardingDate)} · ${buildBoardingText(nextTrip, stopId)} · ${buildDepartureText(nextTrip)}`;
   elements.tripMeta.textContent = "";
   elements.tripMeta.hidden = true;
   elements.walkWarning.classList.toggle("is-hidden", !walkWarning);
   elements.walkWarning.textContent = walkWarning;
   renderCrowdNote(nextTrip);
   elements.secondaryTrip.textContent = secondTrip
-    ? `下一班 ${formatTime(secondTrip.boardingDate)} · （起点 ${secondTrip.departureTime} 发车）`
+    ? `下一班 ${formatTime(secondTrip.boardingDate)} · （${buildDepartureText(secondTrip)}）`
     : "查询范围内没有更多班次";
 }
 
@@ -608,7 +617,7 @@ function createTimelineItem(trip, queryDate, stopId) {
   time.textContent = formatTime(trip.boardingDate);
   day.textContent = getReferenceDayLabel(trip.boardingDate, queryDate);
   line.textContent = `${trip.lineLabel} · ${trip.routeLabel}`;
-  meta.textContent = `（起点 ${trip.departureTime} 发车） · ${buildBoardingText(trip, stopId)}`;
+  meta.textContent = `（${buildDepartureText(trip)}） · ${buildBoardingText(trip, stopId)}`;
   warning.textContent = getWalkWarning(trip, stopId);
   wait.textContent = describeWait(queryDate, trip.boardingDate);
 
