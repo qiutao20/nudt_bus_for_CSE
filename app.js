@@ -28,6 +28,16 @@ const DAY_PROFILES = {
   sunday: { key: "sunday", label: "周日运行表" },
 };
 
+const HOLIDAY_DATES_2026 = new Set([
+  "2026-01-01", "2026-01-02", "2026-01-03",
+  "2026-02-15", "2026-02-16", "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20", "2026-02-21", "2026-02-22", "2026-02-23",
+  "2026-04-04", "2026-04-05", "2026-04-06",
+  "2026-05-01", "2026-05-02", "2026-05-03", "2026-05-04", "2026-05-05",
+  "2026-06-19", "2026-06-20", "2026-06-21",
+  "2026-09-25", "2026-09-26", "2026-09-27",
+  "2026-10-01", "2026-10-02", "2026-10-03", "2026-10-04", "2026-10-05", "2026-10-06", "2026-10-07",
+]);
+
 const CROWD_RULES = {
   dorm: {
     mild: ["08:10", "08:20", "14:12"],
@@ -52,6 +62,24 @@ function createService(lineLabel, origin, destination, departures, stopOffsets) 
     stopOffsets,
   };
 }
+
+const WEEKEND_HOLIDAY_SIGHTSEEING_SERVICES = [
+  createService("环线3路(观光车)", "宿舍", "学院", [
+    "08:15", "08:40", "09:05", "09:30", "09:55", "10:20",
+    "14:20", "14:45", "15:10"
+  ], {
+    dorm: 0,
+    college: 5,
+  }),
+  createService("环线3路(观光车)", "学院", "宿舍", [
+    "11:25", "11:55", "12:25",
+    "16:50", "17:20", "17:50",
+    "21:00", "21:25", "21:50"
+  ], {
+    college: 0,
+    dorm: 7,
+  }),
+];
 
 const SCHEDULES = {
   everyday: [
@@ -309,6 +337,13 @@ function formatDateTimeLocal(date) {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
+function formatDateKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 function parseDateTimeLocal(value) {
   if (!value) {
     return null;
@@ -344,12 +379,20 @@ function resolveDayProfile(date) {
   return DAY_PROFILES.monThu;
 }
 
+function isWeekendOrHoliday(date) {
+  const day = date.getDay();
+  return day === 0 || day === 6 || HOLIDAY_DATES_2026.has(formatDateKey(date));
+}
+
 function getServicesForDate(date) {
   const profile = resolveDayProfile(date);
   const everydayServices = profile.key === "saturday" || profile.key === "sunday"
     ? []
     : SCHEDULES.everyday;
-  return [...everydayServices, ...SCHEDULES[profile.key]];
+  const weekendHolidayServices = isWeekendOrHoliday(date)
+    ? WEEKEND_HOLIDAY_SIGHTSEEING_SERVICES
+    : [];
+  return [...everydayServices, ...weekendHolidayServices, ...SCHEDULES[profile.key]];
 }
 
 function buildDateAtTime(date, hhmm) {
