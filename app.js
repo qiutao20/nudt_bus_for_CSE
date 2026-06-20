@@ -6,9 +6,9 @@
 
 const COLLEGE_OFFSET_SPECIAL_MINUTES = 7;
 const STOP_STORAGE_KEY = "bus-stop-preference";
-const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-05-18";
+const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-06-20-v6";
 const UPDATE_NOTICE_DISMISSED_VALUE = "dismissed";
-const UPDATE_NOTICE_EXPIRES_AT = new Date(2026, 5, 1, 0, 0, 0, 0).getTime();
+const UPDATE_NOTICE_EXPIRES_AT = new Date(2026, 5, 28, 0, 0, 0, 0).getTime();
 
 const STOPS = {
   dorm: {
@@ -76,6 +76,34 @@ const WEEKEND_HOLIDAY_SIGHTSEEING_SERVICES = [
     "11:25", "11:55", "12:25",
     "16:50", "17:20", "17:50",
     "21:00", "21:25", "21:50"
+  ], {
+    college: 0,
+    dorm: 7,
+  }),
+];
+
+const WEEKDAY_SIGHTSEEING_SERVICES = [
+  createService("环线3路(观光车)", "宿舍", "学院", [
+    "07:35", "07:45", "07:55",
+    "08:05", "08:15", "08:25", "08:35", "08:45", "08:55",
+    "09:05", "09:20", "09:35", "09:50",
+    "10:10", "10:30",
+    "11:00", "11:20", "11:35", "11:45",
+    "12:05", "12:20", "12:30",
+    "14:10", "14:25", "14:40",
+    "15:00", "15:10", "15:25", "15:45",
+    "16:00", "16:20", "16:35",
+    "17:00", "17:10", "17:25", "17:40", "17:55",
+    "18:20", "18:50",
+    "19:20", "19:50",
+    "20:20", "20:50",
+    "21:20", "21:50"
+  ], {
+    dorm: 0,
+    college: 5,
+  }),
+  createService("环线3路(观光车)", "学院", "宿舍", [
+    "10:45", "10:50", "16:50"
   ], {
     college: 0,
     dorm: 7,
@@ -390,10 +418,13 @@ function getServicesForDate(date) {
   const everydayServices = profile.key === "saturday" || profile.key === "sunday"
     ? []
     : SCHEDULES.everyday;
+  const weekdaySightseeingServices = isWeekendOrHoliday(date)
+    ? []
+    : WEEKDAY_SIGHTSEEING_SERVICES;
   const weekendHolidayServices = isWeekendOrHoliday(date)
     ? WEEKEND_HOLIDAY_SIGHTSEEING_SERVICES
     : [];
-  return [...everydayServices, ...weekendHolidayServices, ...SCHEDULES[profile.key]];
+  return [...everydayServices, ...weekdaySightseeingServices, ...weekendHolidayServices, ...SCHEDULES[profile.key]];
 }
 
 function buildDateAtTime(date, hhmm) {
