@@ -17,7 +17,7 @@ const STOPS = {
   },
   college: {
     id: "college",
-    label: "学院",
+    label: "系统楼",
   },
   eastGate: {
     id: "eastGate",
@@ -146,7 +146,7 @@ function createService(lineLabel, origin, destination, departures, stopOffsets) 
 }
 
 const WEEKEND_HOLIDAY_SIGHTSEEING_SERVICES = [
-  createService("环线3路(观光车)", "宿舍", "学院", [
+  createService("环线3路(观光车)", "宿舍", "系统楼", [
     "08:15", "08:40", "09:05", "09:30", "09:55", "10:20",
     "14:20", "14:45", "15:10"
   ], {
@@ -154,7 +154,7 @@ const WEEKEND_HOLIDAY_SIGHTSEEING_SERVICES = [
     college: 5,
     ...LOOP_THREE_FROM_DORM_ADDITIONAL_STOP_OFFSETS,
   }),
-  createService("环线3路(观光车)", "学院", "宿舍", [
+  createService("环线3路(观光车)", "系统楼", "宿舍", [
     "11:25", "11:55", "12:25",
     "16:50", "17:20", "17:50",
     "21:00", "21:25", "21:50"
@@ -166,7 +166,7 @@ const WEEKEND_HOLIDAY_SIGHTSEEING_SERVICES = [
 ];
 
 const WEEKDAY_SIGHTSEEING_SERVICES = [
-  createService("环线3路(观光车)", "宿舍", "学院", [
+  createService("环线3路(观光车)", "宿舍", "系统楼", [
     "07:35", "07:45", "07:55",
     "08:05", "08:15", "08:25", "08:35", "08:45", "08:55",
     "09:05", "09:20", "09:35", "09:50",
@@ -186,7 +186,7 @@ const WEEKDAY_SIGHTSEEING_SERVICES = [
     college: 5,
     ...LOOP_THREE_FROM_DORM_ADDITIONAL_STOP_OFFSETS,
   }),
-  createService("环线3路(观光车)", "学院", "宿舍", [
+  createService("环线3路(观光车)", "系统楼", "宿舍", [
     "10:45", "10:50", "16:50"
   ], {
     college: 0,
@@ -197,7 +197,7 @@ const WEEKDAY_SIGHTSEEING_SERVICES = [
 
 const SCHEDULES = {
   everyday: [
-    createService("环线1路", "宿舍", "学院", [
+    createService("环线1路", "宿舍", "系统楼", [
       "07:30", "07:40", "07:50",
       "08:00", "08:10", "08:20",
       "08:30", "08:40", "08:50",
@@ -225,7 +225,7 @@ const SCHEDULES = {
       college: COLLEGE_OFFSET_SPECIAL_MINUTES,
       ...LOOP_ONE_ADDITIONAL_STOP_OFFSETS,
     }),
-    createService("就餐专线v2", "学院", "二食堂", [
+    createService("就餐专线v2", "系统楼", "二食堂", [
       "11:30", "11:50", "12:10", "12:30",
       "16:30", "16:50", "17:10", "17:30", "17:50"
     ], {
@@ -234,47 +234,47 @@ const SCHEDULES = {
     }),
   ],
   monThu: [
-    createService("线路2", "科大佳园", "学院", ["07:05", "07:20", "14:00"], { dorm: 20 }),
-    createService("线路2", "学院", "科大佳园", ["12:05", "17:35", "21:35"], { college: 0 }),
-    createService("线路5", "科大景园东门", "学院", ["07:20"], { dorm: 15 }),
-    createService("线路5", "学院", "科大景园东门", ["17:30"], { college: 0 }),
-    createService("线路7", "四号院家属区", "学院", ["07:00"], { dorm: 40 }),
-    createService("线路7", "学院", "四号院家属区", ["17:10"], { college: 0 }),
-    createService("线路8", "一号院", "学院", [
+    createService("线路2", "科大佳园", "系统楼", ["07:05", "07:20", "14:00"], { dorm: 20 }),
+    createService("线路2", "系统楼", "科大佳园", ["12:05", "17:35", "21:35"], { college: 0 }),
+    createService("线路5", "科大景园东门", "系统楼", ["07:20"], { dorm: 15 }),
+    createService("线路5", "系统楼", "科大景园东门", ["17:30"], { college: 0 }),
+    createService("线路7", "四号院家属区", "系统楼", ["07:00"], { dorm: 40 }),
+    createService("线路7", "系统楼", "四号院家属区", ["17:10"], { college: 0 }),
+    createService("线路8", "一号院", "系统楼", [
       "07:10", "07:20", "07:30", "09:20", "09:30", "11:25",
       "13:50", "14:00", "15:30", "16:25", "18:55", "21:00"
     ], { dorm: 25 }),
-    createService("线路8", "学院", "一号院", [
+    createService("线路8", "系统楼", "一号院", [
       "07:50", "09:45", "10:00", "12:00", "12:35", "13:45",
       "16:25", "17:05", "17:30", "17:40", "17:55", "18:25",
       "21:00", "21:30", "21:35", "21:55", "22:15"
     ], { college: 0 }),
   ],
   friday: [
-    createService("线路2", "科大佳园", "学院", ["07:05", "07:20", "14:00"], { dorm: 20 }),
-    createService("线路2", "学院", "科大佳园", ["12:05", "17:35", "21:35"], { college: 0 }),
-    createService("线路5", "科大景园东门", "学院", ["07:20"], { dorm: 15 }),
-    createService("线路5", "学院", "科大景园东门", ["17:30"], { college: 0 }),
-    createService("线路7", "四号院家属区", "学院", ["07:00"], { dorm: 40 }),
-    createService("线路7", "学院", "四号院家属区", ["17:10"], { college: 0 }),
-    createService("线路8", "一号院", "学院", [
+    createService("线路2", "科大佳园", "系统楼", ["07:05", "07:20", "14:00"], { dorm: 20 }),
+    createService("线路2", "系统楼", "科大佳园", ["12:05", "17:35", "21:35"], { college: 0 }),
+    createService("线路5", "科大景园东门", "系统楼", ["07:20"], { dorm: 15 }),
+    createService("线路5", "系统楼", "科大景园东门", ["17:30"], { college: 0 }),
+    createService("线路7", "四号院家属区", "系统楼", ["07:00"], { dorm: 40 }),
+    createService("线路7", "系统楼", "四号院家属区", ["17:10"], { college: 0 }),
+    createService("线路8", "一号院", "系统楼", [
       "07:10", "07:20", "07:30", "09:20", "09:30", "11:25",
       "13:50", "14:00", "15:30", "16:25", "18:55", "21:00"
     ], { dorm: 25 }),
-    createService("线路8", "学院", "一号院", [
+    createService("线路8", "系统楼", "一号院", [
       "07:50", "09:45", "10:00", "12:00", "12:35", "13:45",
       "16:25", "17:05", "17:30", "17:40", "17:55", "18:25",
       "21:00", "21:35", "21:55", "22:15"
     ], { college: 0 }),
   ],
   saturday: [
-    createService("线路2", "科大佳园", "学院", ["07:23", "13:55"], { dorm: 20 }),
-    createService("线路8", "一号院", "学院", ["07:20", "09:30", "11:25", "13:50", "15:30", "18:55"], { dorm: 25 }),
-    createService("线路8", "学院", "一号院", ["07:50", "10:00", "12:00", "12:35", "16:25", "17:30", "18:25", "21:35", "22:15"], { college: 0 }),
+    createService("线路2", "科大佳园", "系统楼", ["07:23", "13:55"], { dorm: 20 }),
+    createService("线路8", "一号院", "系统楼", ["07:20", "09:30", "11:25", "13:50", "15:30", "18:55"], { dorm: 25 }),
+    createService("线路8", "系统楼", "一号院", ["07:50", "10:00", "12:00", "12:35", "16:25", "17:30", "18:25", "21:35", "22:15"], { college: 0 }),
   ],
   sunday: [
-    createService("线路8", "一号院", "学院", ["07:20", "09:30", "13:50"], { dorm: 25 }),
-    createService("线路8", "学院", "一号院", ["12:35", "17:30", "22:15"], { college: 0 }),
+    createService("线路8", "一号院", "系统楼", ["07:20", "09:30", "13:50"], { dorm: 25 }),
+    createService("线路8", "系统楼", "一号院", ["12:35", "17:30", "22:15"], { college: 0 }),
   ],
 };
 

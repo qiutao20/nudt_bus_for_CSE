@@ -101,6 +101,7 @@ test("existing production offsets remain unchanged", () => {
   const loopThreeFromDorm = app.WEEKDAY_SIGHTSEEING_SERVICES[0];
   const loopThreeFromCollege = app.WEEKDAY_SIGHTSEEING_SERVICES[1];
 
+  assert.equal(app.STOPS.college.label, "系统楼");
   assert.equal(loopOne.stopOffsets.dorm, 0);
   assert.equal(loopOne.stopOffsets.college, 7);
   assert.equal(loopThreeFromDorm.stopOffsets.dorm, 0);
@@ -188,5 +189,5 @@ test("second-level offsets produce the expected boarding timestamp", () => {
   assert.equal(trip.boardingDate.getHours(), 7);
   assert.equal(trip.boardingDate.getMinutes(), 31);
   assert.equal(trip.boardingDate.getSeconds(), 15);
-  assert.equal(trip.routeLabel, "宿舍 -> 学院 -> 宿舍（环线）");
+  assert.equal(trip.routeLabel, "宿舍 -> 系统楼 -> 宿舍（环线）");
 });
