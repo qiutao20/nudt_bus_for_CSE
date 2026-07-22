@@ -19,6 +19,38 @@ const STOPS = {
     id: "college",
     label: "学院",
   },
+  eastGate: {
+    id: "eastGate",
+    label: "东门",
+  },
+  northGate: {
+    id: "northGate",
+    label: "北门",
+  },
+  militaryCenter: {
+    id: "militaryCenter",
+    label: "军体",
+  },
+  laserInstitute: {
+    id: "laserInstitute",
+    label: "激光所",
+  },
+  gaochaoNorth: {
+    id: "gaochaoNorth",
+    label: "高超北侧",
+  },
+  gaochaoSouth: {
+    id: "gaochaoSouth",
+    label: "高超南侧",
+  },
+  scienceCollege: {
+    id: "scienceCollege",
+    label: "理学院",
+  },
+  secondCanteen: {
+    id: "secondCanteen",
+    label: "二食堂",
+  },
 };
 
 const DAY_PROFILES = {
@@ -51,7 +83,56 @@ const CROWD_RULES = {
 
 const DORM_WALK_LINES = new Set(["线路2", "线路5", "线路7", "线路8"]);
 const ORIGIN_VISIBLE_LINES = new Set(["环线1路", "环线3路(观光车)", "就餐专线v2"]);
+const CIRCULAR_ROUTE_LINES = new Set(["环线1路", "环线3路(观光车)"]);
+const ADDITIONAL_STOP_IDS = new Set([
+  "eastGate",
+  "northGate",
+  "militaryCenter",
+  "laserInstitute",
+  "gaochaoNorth",
+  "gaochaoSouth",
+  "scienceCollege",
+  "secondCanteen",
+]);
 const DORM_WALK_NOTICE = "提醒：这班车的上车点不在宿舍楼下，从宿舍出发需要先步行到对应站点。";
+
+function minutesFromSeconds(seconds) {
+  return seconds / 60;
+}
+
+// New-stop offsets come from LiuSizheng/loop-ride-assistant. Existing dorm and
+// college offsets stay unchanged so this development version does not alter
+// the results already used in production.
+const LOOP_ONE_ADDITIONAL_STOP_OFFSETS = {
+  eastGate: minutesFromSeconds(75),
+  militaryCenter: minutesFromSeconds(207),
+  laserInstitute: minutesFromSeconds(283),
+  northGate: minutesFromSeconds(386),
+  gaochaoNorth: minutesFromSeconds(453),
+  scienceCollege: minutesFromSeconds(487),
+  secondCanteen: minutesFromSeconds(643),
+};
+
+const LOOP_THREE_FROM_DORM_ADDITIONAL_STOP_OFFSETS = {
+  militaryCenter: minutesFromSeconds(182),
+  laserInstitute: minutesFromSeconds(260),
+  gaochaoSouth: minutesFromSeconds(365),
+  scienceCollege: minutesFromSeconds(437),
+  secondCanteen: minutesFromSeconds(617),
+};
+
+const LOOP_THREE_FROM_COLLEGE_ADDITIONAL_STOP_OFFSETS = {
+  scienceCollege: minutesFromSeconds(44),
+  secondCanteen: minutesFromSeconds(224),
+  militaryCenter: minutesFromSeconds(706),
+  laserInstitute: minutesFromSeconds(784),
+  gaochaoSouth: minutesFromSeconds(889),
+};
+
+const DINING_ADDITIONAL_STOP_OFFSETS = {
+  scienceCollege: minutesFromSeconds(45),
+  secondCanteen: minutesFromSeconds(277),
+};
 
 function createService(lineLabel, origin, destination, departures, stopOffsets) {
   return {
@@ -71,6 +152,7 @@ const WEEKEND_HOLIDAY_SIGHTSEEING_SERVICES = [
   ], {
     dorm: 0,
     college: 5,
+    ...LOOP_THREE_FROM_DORM_ADDITIONAL_STOP_OFFSETS,
   }),
   createService("环线3路(观光车)", "学院", "宿舍", [
     "11:25", "11:55", "12:25",
@@ -79,6 +161,7 @@ const WEEKEND_HOLIDAY_SIGHTSEEING_SERVICES = [
   ], {
     college: 0,
     dorm: 7,
+    ...LOOP_THREE_FROM_COLLEGE_ADDITIONAL_STOP_OFFSETS,
   }),
 ];
 
@@ -101,12 +184,14 @@ const WEEKDAY_SIGHTSEEING_SERVICES = [
   ], {
     dorm: 0,
     college: 5,
+    ...LOOP_THREE_FROM_DORM_ADDITIONAL_STOP_OFFSETS,
   }),
   createService("环线3路(观光车)", "学院", "宿舍", [
     "10:45", "10:50", "16:50"
   ], {
     college: 0,
     dorm: 7,
+    ...LOOP_THREE_FROM_COLLEGE_ADDITIONAL_STOP_OFFSETS,
   }),
 ];
 
@@ -138,12 +223,14 @@ const SCHEDULES = {
     ], {
       dorm: 0,
       college: COLLEGE_OFFSET_SPECIAL_MINUTES,
+      ...LOOP_ONE_ADDITIONAL_STOP_OFFSETS,
     }),
     createService("就餐专线v2", "学院", "二食堂", [
       "11:30", "11:50", "12:10", "12:30",
       "16:30", "16:50", "17:10", "17:30", "17:50"
     ], {
       college: 0,
+      ...DINING_ADDITIONAL_STOP_OFFSETS,
     }),
   ],
   monThu: [
@@ -437,11 +524,16 @@ function getCrowdLevel(lineLabel, stopId, departureTime) {
     return null;
   }
 
-  if (CROWD_RULES[stopId].high.includes(departureTime)) {
+  const stopRules = CROWD_RULES[stopId];
+  if (!stopRules) {
+    return null;
+  }
+
+  if (stopRules.high.includes(departureTime)) {
     return { level: "high", text: "高度拥挤" };
   }
 
-  if (CROWD_RULES[stopId].mild.includes(departureTime)) {
+  if (stopRules.mild.includes(departureTime)) {
     return { level: "mild", text: "轻微拥挤" };
   }
 
@@ -465,7 +557,9 @@ function buildTrip(service, departure, date, stopId) {
     lineLabel: service.lineLabel,
     origin: service.origin,
     destination: service.destination,
-    routeLabel: service.routeLabel,
+    routeLabel: CIRCULAR_ROUTE_LINES.has(service.lineLabel) && ADDITIONAL_STOP_IDS.has(stopId)
+      ? `${service.origin} -> ${service.destination} -> ${service.origin}（环线）`
+      : service.routeLabel,
     departureTime: departure,
     boardingDate: stopDates[stopId],
     stopDates,
