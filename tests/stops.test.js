@@ -102,6 +102,7 @@ test("existing production offsets remain unchanged", () => {
   const loopThreeFromCollege = app.WEEKDAY_SIGHTSEEING_SERVICES[1];
 
   assert.equal(app.STOPS.college.label, "系统楼");
+  assert.equal(app.STOPS.secondCanteen.label, "二食堂（去往研究生宿舍）");
   assert.equal(loopOne.stopOffsets.dorm, 0);
   assert.equal(loopOne.stopOffsets.college, 7);
   assert.equal(loopThreeFromDorm.stopOffsets.dorm, 0);
@@ -110,39 +111,33 @@ test("existing production offsets remain unchanged", () => {
   assert.equal(loopThreeFromCollege.stopOffsets.dorm, 7);
 });
 
-test("new stop offsets match the reference app's cumulative seconds", () => {
-  const assertOffsets = (actual, expectedSeconds) => {
-    for (const [stopId, seconds] of Object.entries(expectedSeconds)) {
-      assert.ok(Math.abs(actual[stopId] * 60 - seconds) < 1e-9, `${stopId} offset differs`);
-    }
-  };
-
-  assertOffsets(app.LOOP_ONE_ADDITIONAL_STOP_OFFSETS, {
-    eastGate: 75,
-    militaryCenter: 207,
-    laserInstitute: 283,
-    northGate: 386,
-    gaochaoNorth: 453,
-    scienceCollege: 487,
-    secondCanteen: 643,
+test("new stop offsets use rounded whole minutes", () => {
+  assert.deepEqual(app.LOOP_ONE_ADDITIONAL_STOP_OFFSETS, {
+    eastGate: 1,
+    militaryCenter: 3,
+    laserInstitute: 5,
+    northGate: 6,
+    gaochaoNorth: 8,
+    scienceCollege: 8,
+    secondCanteen: 11,
   });
-  assertOffsets(app.LOOP_THREE_FROM_DORM_ADDITIONAL_STOP_OFFSETS, {
-    militaryCenter: 182,
-    laserInstitute: 260,
-    gaochaoSouth: 365,
-    scienceCollege: 437,
-    secondCanteen: 617,
+  assert.deepEqual(app.LOOP_THREE_FROM_DORM_ADDITIONAL_STOP_OFFSETS, {
+    militaryCenter: 3,
+    laserInstitute: 4,
+    gaochaoSouth: 6,
+    scienceCollege: 7,
+    secondCanteen: 10,
   });
-  assertOffsets(app.LOOP_THREE_FROM_COLLEGE_ADDITIONAL_STOP_OFFSETS, {
-    scienceCollege: 44,
-    secondCanteen: 224,
-    militaryCenter: 706,
-    laserInstitute: 784,
-    gaochaoSouth: 889,
+  assert.deepEqual(app.LOOP_THREE_FROM_COLLEGE_ADDITIONAL_STOP_OFFSETS, {
+    scienceCollege: 1,
+    secondCanteen: 4,
+    militaryCenter: 12,
+    laserInstitute: 13,
+    gaochaoSouth: 15,
   });
-  assertOffsets(app.DINING_ADDITIONAL_STOP_OFFSETS, {
-    scienceCollege: 45,
-    secondCanteen: 277,
+  assert.deepEqual(app.DINING_ADDITIONAL_STOP_OFFSETS, {
+    scienceCollege: 1,
+    secondCanteen: 5,
   });
 });
 
@@ -182,12 +177,12 @@ test("new boarding points are attached only to their intended services", () => {
   });
 });
 
-test("second-level offsets produce the expected boarding timestamp", () => {
+test("whole-minute offsets produce a zero-second boarding timestamp", () => {
   const loopOne = app.SCHEDULES.everyday.find((service) => service.lineLabel === "环线1路");
   const trip = app.buildTrip(loopOne, "07:30", new Date(2026, 6, 22), "eastGate");
 
   assert.equal(trip.boardingDate.getHours(), 7);
   assert.equal(trip.boardingDate.getMinutes(), 31);
-  assert.equal(trip.boardingDate.getSeconds(), 15);
+  assert.equal(trip.boardingDate.getSeconds(), 0);
   assert.equal(trip.routeLabel, "宿舍 -> 系统楼 -> 宿舍（环线）");
 });

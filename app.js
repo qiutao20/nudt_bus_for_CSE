@@ -49,7 +49,7 @@ const STOPS = {
   },
   secondCanteen: {
     id: "secondCanteen",
-    label: "二食堂",
+    label: "二食堂（去往研究生宿舍）",
   },
 };
 
@@ -96,42 +96,39 @@ const ADDITIONAL_STOP_IDS = new Set([
 ]);
 const DORM_WALK_NOTICE = "提醒：这班车的上车点不在宿舍楼下，从宿舍出发需要先步行到对应站点。";
 
-function minutesFromSeconds(seconds) {
-  return seconds / 60;
-}
-
 // New-stop offsets come from LiuSizheng/loop-ride-assistant. Existing dorm and
 // college offsets stay unchanged so this development version does not alter
-// the results already used in production.
+// the results already used in production. Reference travel times are rounded
+// to whole minutes so all timetable calculations use minute precision.
 const LOOP_ONE_ADDITIONAL_STOP_OFFSETS = {
-  eastGate: minutesFromSeconds(75),
-  militaryCenter: minutesFromSeconds(207),
-  laserInstitute: minutesFromSeconds(283),
-  northGate: minutesFromSeconds(386),
-  gaochaoNorth: minutesFromSeconds(453),
-  scienceCollege: minutesFromSeconds(487),
-  secondCanteen: minutesFromSeconds(643),
+  eastGate: 1,
+  militaryCenter: 3,
+  laserInstitute: 5,
+  northGate: 6,
+  gaochaoNorth: 8,
+  scienceCollege: 8,
+  secondCanteen: 11,
 };
 
 const LOOP_THREE_FROM_DORM_ADDITIONAL_STOP_OFFSETS = {
-  militaryCenter: minutesFromSeconds(182),
-  laserInstitute: minutesFromSeconds(260),
-  gaochaoSouth: minutesFromSeconds(365),
-  scienceCollege: minutesFromSeconds(437),
-  secondCanteen: minutesFromSeconds(617),
+  militaryCenter: 3,
+  laserInstitute: 4,
+  gaochaoSouth: 6,
+  scienceCollege: 7,
+  secondCanteen: 10,
 };
 
 const LOOP_THREE_FROM_COLLEGE_ADDITIONAL_STOP_OFFSETS = {
-  scienceCollege: minutesFromSeconds(44),
-  secondCanteen: minutesFromSeconds(224),
-  militaryCenter: minutesFromSeconds(706),
-  laserInstitute: minutesFromSeconds(784),
-  gaochaoSouth: minutesFromSeconds(889),
+  scienceCollege: 1,
+  secondCanteen: 4,
+  militaryCenter: 12,
+  laserInstitute: 13,
+  gaochaoSouth: 15,
 };
 
 const DINING_ADDITIONAL_STOP_OFFSETS = {
-  scienceCollege: minutesFromSeconds(45),
-  secondCanteen: minutesFromSeconds(277),
+  scienceCollege: 1,
+  secondCanteen: 5,
 };
 
 function createService(lineLabel, origin, destination, departures, stopOffsets) {
