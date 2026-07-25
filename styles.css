@@ -162,6 +162,10 @@ h2 {
   color: #fffaf3;
 }
 
+.stop-button-note {
+  white-space: nowrap;
+}
+
 .manual-field {
   display: flex;
   flex-direction: column;
@@ -501,5 +505,12 @@ body.notice-open {
 
   .update-notice-actions {
     flex-direction: column-reverse;
+  }
+
+  .stop-button-note {
+    display: block;
+    margin-top: 3px;
+    font-size: 0.82em;
+    line-height: 1.2;
   }
 }
