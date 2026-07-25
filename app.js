@@ -96,8 +96,8 @@ const ADDITIONAL_STOP_IDS = new Set([
 ]);
 const DORM_WALK_NOTICE = "提醒：这班车的上车点不在宿舍楼下，从宿舍出发需要先步行到对应站点。";
 
-// New-stop offsets come from LiuSizheng/loop-ride-assistant. Existing dorm and
-// college offsets stay unchanged so this development version does not alter
+// New-stop offsets come from the internal reference data. Existing dorm and
+// college offsets stay unchanged so this version does not alter
 // the results already used in production. Reference travel times are rounded
 // to whole minutes so all timetable calculations use minute precision.
 const LOOP_ONE_ADDITIONAL_STOP_OFFSETS = {
