@@ -77,11 +77,7 @@ function loadAppForTesting() {
   return vm.runInContext(`({
     STOPS,
     SCHEDULES,
-    WEEKDAY_SIGHTSEEING_SERVICES,
-    WEEKEND_HOLIDAY_SIGHTSEEING_SERVICES,
     LOOP_ONE_ADDITIONAL_STOP_OFFSETS,
-    LOOP_THREE_FROM_DORM_ADDITIONAL_STOP_OFFSETS,
-    LOOP_THREE_FROM_COLLEGE_ADDITIONAL_STOP_OFFSETS,
     DINING_ADDITIONAL_STOP_OFFSETS,
     buildTrip,
   })`, context);
@@ -98,21 +94,15 @@ test("the HTML stop buttons match the configured stops", () => {
 
 test("existing production offsets remain unchanged", () => {
   const loopOne = app.SCHEDULES.everyday.find((service) => service.lineLabel === "环线1路");
-  const loopThreeFromDorm = app.WEEKDAY_SIGHTSEEING_SERVICES[0];
-  const loopThreeFromCollege = app.WEEKDAY_SIGHTSEEING_SERVICES[1];
 
   assert.equal(app.STOPS.college.label, "系统楼");
   assert.equal(app.STOPS.secondCanteen.label, "二食堂（去往研究生宿舍）");
   assert.equal(loopOne.stopOffsets.dorm, 0);
   assert.equal(loopOne.stopOffsets.college, 7);
-  assert.equal(loopThreeFromDorm.stopOffsets.dorm, 0);
-  assert.equal(loopThreeFromDorm.stopOffsets.college, 5);
-  assert.equal(loopThreeFromCollege.stopOffsets.college, 0);
-  assert.equal(loopThreeFromCollege.stopOffsets.dorm, 7);
 });
 
 test("new stop offsets use rounded whole minutes", () => {
-  assert.deepEqual(app.LOOP_ONE_ADDITIONAL_STOP_OFFSETS, {
+  assert.deepEqual({ ...app.LOOP_ONE_ADDITIONAL_STOP_OFFSETS }, {
     eastGate: 1,
     militaryCenter: 3,
     laserInstitute: 5,
@@ -121,21 +111,7 @@ test("new stop offsets use rounded whole minutes", () => {
     scienceCollege: 8,
     secondCanteen: 11,
   });
-  assert.deepEqual(app.LOOP_THREE_FROM_DORM_ADDITIONAL_STOP_OFFSETS, {
-    militaryCenter: 3,
-    laserInstitute: 4,
-    gaochaoSouth: 6,
-    scienceCollege: 7,
-    secondCanteen: 10,
-  });
-  assert.deepEqual(app.LOOP_THREE_FROM_COLLEGE_ADDITIONAL_STOP_OFFSETS, {
-    scienceCollege: 1,
-    secondCanteen: 4,
-    militaryCenter: 12,
-    laserInstitute: 13,
-    gaochaoSouth: 15,
-  });
-  assert.deepEqual(app.DINING_ADDITIONAL_STOP_OFFSETS, {
+  assert.deepEqual({ ...app.DINING_ADDITIONAL_STOP_OFFSETS }, {
     scienceCollege: 1,
     secondCanteen: 5,
   });
@@ -143,11 +119,7 @@ test("new stop offsets use rounded whole minutes", () => {
 
 test("new boarding points are attached only to their intended services", () => {
   const loopOne = app.SCHEDULES.everyday.find((service) => service.lineLabel === "环线1路");
-  const dining = app.SCHEDULES.everyday.find((service) => service.lineLabel === "就餐专线v2");
-  const loopThreeServices = [
-    ...app.WEEKDAY_SIGHTSEEING_SERVICES,
-    ...app.WEEKEND_HOLIDAY_SIGHTSEEING_SERVICES,
-  ];
+  const dining = app.SCHEDULES.everyday.find((service) => service.lineLabel === "就餐专线");
 
   [
     "eastGate",
@@ -158,23 +130,36 @@ test("new boarding points are attached only to their intended services", () => {
     "scienceCollege",
     "secondCanteen",
   ].forEach((stopId) => assert.ok(loopOne.stopOffsets[stopId] !== undefined));
-  assert.equal(loopOne.stopOffsets.gaochaoSouth, undefined);
   assert.ok(dining.stopOffsets.scienceCollege !== undefined);
   assert.ok(dining.stopOffsets.secondCanteen !== undefined);
   assert.equal(dining.stopOffsets.gaochaoNorth, undefined);
-  assert.equal(dining.stopOffsets.gaochaoSouth, undefined);
-  loopThreeServices.forEach((service) => {
-    [
-      "militaryCenter",
-      "laserInstitute",
-      "gaochaoSouth",
-      "scienceCollege",
-      "secondCanteen",
-    ].forEach((stopId) => assert.ok(service.stopOffsets[stopId] !== undefined));
-    assert.equal(service.stopOffsets.eastGate, undefined);
-    assert.equal(service.stopOffsets.northGate, undefined);
-    assert.equal(service.stopOffsets.gaochaoNorth, undefined);
-  });
+});
+
+test("the active bus schedules exactly match the September update", () => {
+  const loopOne = app.SCHEDULES.everyday.find((service) => service.lineLabel === "环线1路");
+  const dining = app.SCHEDULES.everyday.find((service) => service.lineLabel === "就餐专线");
+
+  assert.deepEqual(Array.from(loopOne.departures), [
+    "07:30", "07:40", "07:50", "08:00", "08:10", "08:20", "08:30", "08:40", "08:50",
+    "09:00", "09:10", "09:20", "09:30", "09:40", "09:50", "10:00", "10:20", "10:30",
+    "10:40", "11:00", "11:20", "11:40", "12:00", "12:20", "12:40", "14:00", "14:10",
+    "14:20", "14:30", "14:40", "14:50", "15:00", "15:10", "15:20", "15:30", "15:40",
+    "15:50", "16:00", "16:10", "16:20", "16:30", "16:40", "17:00", "17:10", "17:20",
+    "17:30", "17:40", "18:00", "18:20", "18:40", "19:00", "19:20", "19:40", "20:00",
+    "20:20", "20:40", "21:00", "21:20", "21:40", "21:50", "22:10", "22:30",
+  ]);
+  assert.deepEqual(Array.from(dining.departures), [
+    "11:20", "11:40", "12:00", "12:20", "12:40",
+    "16:30", "16:50", "17:10", "17:30", "17:50",
+  ]);
+});
+
+test("loop lines 2 and 3 are no longer published", () => {
+  const services = Object.values(app.SCHEDULES).flat();
+
+  assert.equal(services.some((service) => service.lineLabel === "线路2"), false);
+  assert.equal(services.some((service) => service.lineLabel.includes("环线3路")), false);
+  assert.equal(app.STOPS.gaochaoSouth, undefined);
 });
 
 test("whole-minute offsets produce a zero-second boarding timestamp", () => {

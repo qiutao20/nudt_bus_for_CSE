@@ -6,9 +6,9 @@
 
 const COLLEGE_OFFSET_SPECIAL_MINUTES = 7;
 const STOP_STORAGE_KEY = "bus-stop-preference";
-const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-06-20-v6";
+const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-09-09-v7";
 const UPDATE_NOTICE_DISMISSED_VALUE = "dismissed";
-const UPDATE_NOTICE_EXPIRES_AT = new Date(2026, 5, 28, 0, 0, 0, 0).getTime();
+const UPDATE_NOTICE_EXPIRES_AT = new Date(2026, 8, 23, 0, 0, 0, 0).getTime();
 
 const STOPS = {
   dorm: {
@@ -39,10 +39,6 @@ const STOPS = {
     id: "gaochaoNorth",
     label: "高超北侧",
   },
-  gaochaoSouth: {
-    id: "gaochaoSouth",
-    label: "高超南侧",
-  },
   scienceCollege: {
     id: "scienceCollege",
     label: "理学院",
@@ -60,20 +56,10 @@ const DAY_PROFILES = {
   sunday: { key: "sunday", label: "周日运行表" },
 };
 
-const HOLIDAY_DATES_2026 = new Set([
-  "2026-01-01", "2026-01-02", "2026-01-03",
-  "2026-02-15", "2026-02-16", "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20", "2026-02-21", "2026-02-22", "2026-02-23",
-  "2026-04-04", "2026-04-05", "2026-04-06",
-  "2026-05-01", "2026-05-02", "2026-05-03", "2026-05-04", "2026-05-05",
-  "2026-06-19", "2026-06-20", "2026-06-21",
-  "2026-09-25", "2026-09-26", "2026-09-27",
-  "2026-10-01", "2026-10-02", "2026-10-03", "2026-10-04", "2026-10-05", "2026-10-06", "2026-10-07",
-]);
-
 const CROWD_RULES = {
   dorm: {
-    mild: ["08:10", "08:20", "14:12"],
-    high: ["08:30", "08:40", "08:50", "14:24", "14:36", "14:48"],
+    mild: ["08:10", "08:20"],
+    high: ["08:30", "08:40", "08:50"],
   },
   college: {
     mild: ["17:00"],
@@ -81,16 +67,15 @@ const CROWD_RULES = {
   },
 };
 
-const DORM_WALK_LINES = new Set(["线路2", "线路5", "线路7", "线路8"]);
-const ORIGIN_VISIBLE_LINES = new Set(["环线1路", "环线3路(观光车)", "就餐专线v2"]);
-const CIRCULAR_ROUTE_LINES = new Set(["环线1路", "环线3路(观光车)"]);
+const DORM_WALK_LINES = new Set(["线路5", "线路7", "线路8"]);
+const ORIGIN_VISIBLE_LINES = new Set(["环线1路", "就餐专线"]);
+const CIRCULAR_ROUTE_LINES = new Set(["环线1路"]);
 const ADDITIONAL_STOP_IDS = new Set([
   "eastGate",
   "northGate",
   "militaryCenter",
   "laserInstitute",
   "gaochaoNorth",
-  "gaochaoSouth",
   "scienceCollege",
   "secondCanteen",
 ]);
@@ -109,22 +94,6 @@ const LOOP_ONE_ADDITIONAL_STOP_OFFSETS = {
   secondCanteen: 11,
 };
 
-const LOOP_THREE_FROM_DORM_ADDITIONAL_STOP_OFFSETS = {
-  militaryCenter: 3,
-  laserInstitute: 4,
-  gaochaoSouth: 6,
-  scienceCollege: 7,
-  secondCanteen: 10,
-};
-
-const LOOP_THREE_FROM_COLLEGE_ADDITIONAL_STOP_OFFSETS = {
-  scienceCollege: 1,
-  secondCanteen: 4,
-  militaryCenter: 12,
-  laserInstitute: 13,
-  gaochaoSouth: 15,
-};
-
 const DINING_ADDITIONAL_STOP_OFFSETS = {
   scienceCollege: 1,
   secondCanteen: 5,
@@ -141,88 +110,32 @@ function createService(lineLabel, origin, destination, departures, stopOffsets) 
   };
 }
 
-const WEEKEND_HOLIDAY_SIGHTSEEING_SERVICES = [
-  createService("环线3路(观光车)", "宿舍", "系统楼", [
-    "08:15", "08:40", "09:05", "09:30", "09:55", "10:20",
-    "14:20", "14:45", "15:10"
-  ], {
-    dorm: 0,
-    college: 5,
-    ...LOOP_THREE_FROM_DORM_ADDITIONAL_STOP_OFFSETS,
-  }),
-  createService("环线3路(观光车)", "系统楼", "宿舍", [
-    "11:25", "11:55", "12:25",
-    "16:50", "17:20", "17:50",
-    "21:00", "21:25", "21:50"
-  ], {
-    college: 0,
-    dorm: 7,
-    ...LOOP_THREE_FROM_COLLEGE_ADDITIONAL_STOP_OFFSETS,
-  }),
-];
-
-const WEEKDAY_SIGHTSEEING_SERVICES = [
-  createService("环线3路(观光车)", "宿舍", "系统楼", [
-    "07:35", "07:45", "07:55",
-    "08:05", "08:15", "08:25", "08:35", "08:45", "08:55",
-    "09:05", "09:20", "09:35", "09:50",
-    "10:10", "10:30",
-    "11:00", "11:20", "11:35", "11:45",
-    "12:05", "12:20", "12:30",
-    "14:10", "14:25", "14:40",
-    "15:00", "15:10", "15:25", "15:45",
-    "16:00", "16:20", "16:35",
-    "17:00", "17:10", "17:25", "17:40", "17:55",
-    "18:20", "18:50",
-    "19:20", "19:50",
-    "20:20", "20:50",
-    "21:20", "21:50"
-  ], {
-    dorm: 0,
-    college: 5,
-    ...LOOP_THREE_FROM_DORM_ADDITIONAL_STOP_OFFSETS,
-  }),
-  createService("环线3路(观光车)", "系统楼", "宿舍", [
-    "10:45", "10:50", "16:50"
-  ], {
-    college: 0,
-    dorm: 7,
-    ...LOOP_THREE_FROM_COLLEGE_ADDITIONAL_STOP_OFFSETS,
-  }),
-];
-
 const SCHEDULES = {
   everyday: [
     createService("环线1路", "宿舍", "系统楼", [
       "07:30", "07:40", "07:50",
       "08:00", "08:10", "08:20",
       "08:30", "08:40", "08:50",
-      "09:00", "09:12", "09:24",
-      "09:36", "09:48", "10:00",
-      "10:15",
-      "10:30", "10:45", "11:00",
-      "11:15", "11:30", "11:40",
-      "11:50", "12:10", "12:25",
-      "12:40",
-      "14:00", "14:12", "14:24",
-      "14:36", "14:48", "15:00",
-      "15:20", "15:40", "16:00",
-      "16:15", "16:30", "16:45",
-      "17:00", "17:15", "17:30",
-      "17:45", "18:00", "18:15",
-      "18:30", "18:45", "19:00",
-      "19:15", "19:30", "19:45",
-      "20:00", "20:15", "20:30",
-      "20:45", "21:00", "21:15",
-      "21:30", "21:45", "22:00",
-      "22:15", "22:30"
+      "09:00", "09:10", "09:20", "09:30", "09:40", "09:50",
+      "10:00", "10:20", "10:30", "10:40",
+      "11:00", "11:20", "11:40",
+      "12:00", "12:20", "12:40",
+      "14:00", "14:10", "14:20", "14:30", "14:40", "14:50",
+      "15:00", "15:10", "15:20", "15:30", "15:40", "15:50",
+      "16:00", "16:10", "16:20", "16:30", "16:40",
+      "17:00", "17:10", "17:20", "17:30", "17:40",
+      "18:00", "18:20", "18:40",
+      "19:00", "19:20", "19:40",
+      "20:00", "20:20", "20:40",
+      "21:00", "21:20", "21:40", "21:50",
+      "22:10", "22:30"
     ], {
       dorm: 0,
       college: COLLEGE_OFFSET_SPECIAL_MINUTES,
       ...LOOP_ONE_ADDITIONAL_STOP_OFFSETS,
     }),
-    createService("就餐专线v2", "系统楼", "二食堂", [
-      "11:30", "11:50", "12:10", "12:30",
+    createService("就餐专线", "系统楼", "二食堂", [
+      "11:20", "11:40", "12:00", "12:20", "12:40",
       "16:30", "16:50", "17:10", "17:30", "17:50"
     ], {
       college: 0,
@@ -230,8 +143,6 @@ const SCHEDULES = {
     }),
   ],
   monThu: [
-    createService("线路2", "科大佳园", "系统楼", ["07:05", "07:20", "14:00"], { dorm: 20 }),
-    createService("线路2", "系统楼", "科大佳园", ["12:05", "17:35", "21:35"], { college: 0 }),
     createService("线路5", "科大景园东门", "系统楼", ["07:20"], { dorm: 15 }),
     createService("线路5", "系统楼", "科大景园东门", ["17:30"], { college: 0 }),
     createService("线路7", "四号院家属区", "系统楼", ["07:00"], { dorm: 40 }),
@@ -247,8 +158,6 @@ const SCHEDULES = {
     ], { college: 0 }),
   ],
   friday: [
-    createService("线路2", "科大佳园", "系统楼", ["07:05", "07:20", "14:00"], { dorm: 20 }),
-    createService("线路2", "系统楼", "科大佳园", ["12:05", "17:35", "21:35"], { college: 0 }),
     createService("线路5", "科大景园东门", "系统楼", ["07:20"], { dorm: 15 }),
     createService("线路5", "系统楼", "科大景园东门", ["17:30"], { college: 0 }),
     createService("线路7", "四号院家属区", "系统楼", ["07:00"], { dorm: 40 }),
@@ -264,7 +173,6 @@ const SCHEDULES = {
     ], { college: 0 }),
   ],
   saturday: [
-    createService("线路2", "科大佳园", "系统楼", ["07:23", "13:55"], { dorm: 20 }),
     createService("线路8", "一号院", "系统楼", ["07:20", "09:30", "11:25", "13:50", "15:30", "18:55"], { dorm: 25 }),
     createService("线路8", "系统楼", "一号院", ["07:50", "10:00", "12:00", "12:35", "16:25", "17:30", "18:25", "21:35", "22:15"], { college: 0 }),
   ],
@@ -449,13 +357,6 @@ function formatDateTimeLocal(date) {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
-function formatDateKey(date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
 function parseDateTimeLocal(value) {
   if (!value) {
     return null;
@@ -491,23 +392,12 @@ function resolveDayProfile(date) {
   return DAY_PROFILES.monThu;
 }
 
-function isWeekendOrHoliday(date) {
-  const day = date.getDay();
-  return day === 0 || day === 6 || HOLIDAY_DATES_2026.has(formatDateKey(date));
-}
-
 function getServicesForDate(date) {
   const profile = resolveDayProfile(date);
   const everydayServices = profile.key === "saturday" || profile.key === "sunday"
     ? []
     : SCHEDULES.everyday;
-  const weekdaySightseeingServices = isWeekendOrHoliday(date)
-    ? []
-    : WEEKDAY_SIGHTSEEING_SERVICES;
-  const weekendHolidayServices = isWeekendOrHoliday(date)
-    ? WEEKEND_HOLIDAY_SIGHTSEEING_SERVICES
-    : [];
-  return [...everydayServices, ...weekdaySightseeingServices, ...weekendHolidayServices, ...SCHEDULES[profile.key]];
+  return [...everydayServices, ...SCHEDULES[profile.key]];
 }
 
 function buildDateAtTime(date, hhmm) {
