@@ -116,6 +116,7 @@ test("new stop offsets use rounded whole minutes", () => {
   assert.deepEqual({ ...app.DINING_ADDITIONAL_STOP_OFFSETS }, {
     scienceCollege: 1,
     secondCanteen: 5,
+    secondCanteenToCollege: 8,
   });
 });
 
@@ -135,6 +136,7 @@ test("new boarding points are attached only to their intended services", () => {
   ].forEach((stopId) => assert.ok(loopOne.stopOffsets[stopId] !== undefined));
   assert.ok(dining.stopOffsets.scienceCollege !== undefined);
   assert.ok(dining.stopOffsets.secondCanteen !== undefined);
+  assert.equal(dining.stopOffsets.secondCanteenToCollege, 8);
   assert.equal(dining.stopOffsets.gaochaoNorth, undefined);
   assert.deepEqual(Object.keys(loopTwo.stopOffsets), [
     "dorm",

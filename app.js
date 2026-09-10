@@ -112,6 +112,7 @@ const LOOP_ONE_ADDITIONAL_STOP_OFFSETS = {
 const DINING_ADDITIONAL_STOP_OFFSETS = {
   scienceCollege: 1,
   secondCanteen: 5,
+  secondCanteenToCollege: 8,
 };
 
 function createService(lineLabel, origin, destination, departures, stopOffsets) {
