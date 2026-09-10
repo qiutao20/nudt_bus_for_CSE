@@ -6,7 +6,7 @@
 
 const COLLEGE_OFFSET_SPECIAL_MINUTES = 7;
 const STOP_STORAGE_KEY = "bus-stop-preference";
-const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-09-10-v7-2";
+const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-09-10-v7-3";
 const UPDATE_NOTICE_DISMISSED_VALUE = "dismissed";
 const UPDATE_NOTICE_EXPIRES_AT = new Date(2026, 8, 23, 0, 0, 0, 0).getTime();
 
@@ -82,7 +82,7 @@ const CROWD_RULES = {
 };
 
 const DORM_WALK_LINES = new Set(["线路2", "线路5", "线路7", "线路8"]);
-const ORIGIN_VISIBLE_LINES = new Set(["环线1路", "环线2路", "就餐专线"]);
+const ORIGIN_VISIBLE_LINES = new Set(["环线1路", "环线2路（观光车）", "就餐专线"]);
 const CIRCULAR_ROUTE_LINES = new Set(["环线1路"]);
 const ADDITIONAL_STOP_IDS = new Set([
   "eastGate",
@@ -156,7 +156,7 @@ const SCHEDULES = {
       college: 0,
       ...DINING_ADDITIONAL_STOP_OFFSETS,
     }),
-    createService("环线2路", "宿舍", "系统楼", [
+    createService("环线2路（观光车）", "宿舍", "系统楼", [
       "07:30", "07:40", "07:50",
       "08:00", "08:10", "08:20", "08:30", "08:40", "08:50",
       "09:00", "09:10", "09:20", "09:30", "09:40", "09:50",
@@ -443,7 +443,7 @@ function getServicesForDate(date) {
   const everydayServices = profile.key === "saturday" || profile.key === "sunday"
     ? []
     : SCHEDULES.everyday.filter((service) => (
-      service.lineLabel !== "环线2路" || !HOLIDAY_DATES_2026.has(formatDateKey(date))
+      service.lineLabel !== "环线2路（观光车）" || !HOLIDAY_DATES_2026.has(formatDateKey(date))
     ));
   return [...everydayServices, ...SCHEDULES[profile.key]];
 }

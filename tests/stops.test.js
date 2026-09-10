@@ -121,7 +121,7 @@ test("new stop offsets use rounded whole minutes", () => {
 
 test("new boarding points are attached only to their intended services", () => {
   const loopOne = app.SCHEDULES.everyday.find((service) => service.lineLabel === "环线1路");
-  const loopTwo = app.SCHEDULES.everyday.find((service) => service.lineLabel === "环线2路");
+  const loopTwo = app.SCHEDULES.everyday.find((service) => service.lineLabel === "环线2路（观光车）");
   const dining = app.SCHEDULES.everyday.find((service) => service.lineLabel === "就餐专线");
 
   [
@@ -146,7 +146,7 @@ test("new boarding points are attached only to their intended services", () => {
 
 test("the active bus schedules exactly match the September update", () => {
   const loopOne = app.SCHEDULES.everyday.find((service) => service.lineLabel === "环线1路");
-  const loopTwo = app.SCHEDULES.everyday.find((service) => service.lineLabel === "环线2路");
+  const loopTwo = app.SCHEDULES.everyday.find((service) => service.lineLabel === "环线2路（观光车）");
   const dining = app.SCHEDULES.everyday.find((service) => service.lineLabel === "就餐专线");
 
   assert.deepEqual(Array.from(loopOne.departures), [
@@ -186,7 +186,8 @@ test("regular line 2 and the renamed loop line are distinct services", () => {
   const saturdayLineTwo = app.SCHEDULES.saturday.filter((service) => service.lineLabel === "线路2");
 
   assert.equal(services.some((service) => service.lineLabel === "线路2"), true);
-  assert.equal(services.some((service) => service.lineLabel === "环线2路"), true);
+  assert.equal(services.some((service) => service.lineLabel === "环线2路（观光车）"), true);
+  assert.equal(services.some((service) => service.lineLabel === "环线2路"), false);
   assert.equal(services.some((service) => service.lineLabel.includes("环线3路")), false);
   assert.deepEqual(Array.from(monThuLineTwo, (service) => Array.from(service.departures)), [
     ["07:05", "07:20", "14:00"],
@@ -205,7 +206,7 @@ test("regular line 2 and the renamed loop line are distinct services", () => {
 
 test("loop line 2 runs on non-holiday weekdays only", () => {
   const hasLoopTwo = (date) => app.getServicesForDate(date)
-    .some((service) => service.lineLabel === "环线2路");
+    .some((service) => service.lineLabel === "环线2路（观光车）");
 
   assert.equal(hasLoopTwo(new Date(2026, 8, 10)), true);
   assert.equal(hasLoopTwo(new Date(2026, 8, 11)), true);
