@@ -154,11 +154,27 @@ test("the active bus schedules exactly match the September update", () => {
   ]);
 });
 
-test("loop lines 2 and 3 are no longer published", () => {
+test("regular line 2 remains published while the renamed loop line is offline", () => {
   const services = Object.values(app.SCHEDULES).flat();
+  const monThuLineTwo = app.SCHEDULES.monThu.filter((service) => service.lineLabel === "线路2");
+  const fridayLineTwo = app.SCHEDULES.friday.filter((service) => service.lineLabel === "线路2");
+  const saturdayLineTwo = app.SCHEDULES.saturday.filter((service) => service.lineLabel === "线路2");
 
-  assert.equal(services.some((service) => service.lineLabel === "线路2"), false);
+  assert.equal(services.some((service) => service.lineLabel === "线路2"), true);
+  assert.equal(services.some((service) => service.lineLabel === "环线2路"), false);
   assert.equal(services.some((service) => service.lineLabel.includes("环线3路")), false);
+  assert.deepEqual(Array.from(monThuLineTwo, (service) => Array.from(service.departures)), [
+    ["07:05", "07:20", "14:00"],
+    ["12:05", "17:35", "21:35"],
+  ]);
+  assert.deepEqual(Array.from(fridayLineTwo, (service) => Array.from(service.departures)), [
+    ["07:05", "07:20", "14:00"],
+    ["12:05", "17:35", "21:35"],
+  ]);
+  assert.deepEqual(Array.from(saturdayLineTwo, (service) => Array.from(service.departures)), [
+    ["07:23", "13:55"],
+  ]);
+  assert.equal(app.SCHEDULES.sunday.some((service) => service.lineLabel === "线路2"), false);
   assert.equal(app.STOPS.gaochaoSouth, undefined);
 });
 

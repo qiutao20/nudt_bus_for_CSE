@@ -6,7 +6,7 @@
 
 const COLLEGE_OFFSET_SPECIAL_MINUTES = 7;
 const STOP_STORAGE_KEY = "bus-stop-preference";
-const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-09-09-v7";
+const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-09-10-v7-1";
 const UPDATE_NOTICE_DISMISSED_VALUE = "dismissed";
 const UPDATE_NOTICE_EXPIRES_AT = new Date(2026, 8, 23, 0, 0, 0, 0).getTime();
 
@@ -67,7 +67,7 @@ const CROWD_RULES = {
   },
 };
 
-const DORM_WALK_LINES = new Set(["线路5", "线路7", "线路8"]);
+const DORM_WALK_LINES = new Set(["线路2", "线路5", "线路7", "线路8"]);
 const ORIGIN_VISIBLE_LINES = new Set(["环线1路", "就餐专线"]);
 const CIRCULAR_ROUTE_LINES = new Set(["环线1路"]);
 const ADDITIONAL_STOP_IDS = new Set([
@@ -143,6 +143,8 @@ const SCHEDULES = {
     }),
   ],
   monThu: [
+    createService("线路2", "科大佳园", "系统楼", ["07:05", "07:20", "14:00"], { dorm: 20 }),
+    createService("线路2", "系统楼", "科大佳园", ["12:05", "17:35", "21:35"], { college: 0 }),
     createService("线路5", "科大景园东门", "系统楼", ["07:20"], { dorm: 15 }),
     createService("线路5", "系统楼", "科大景园东门", ["17:30"], { college: 0 }),
     createService("线路7", "四号院家属区", "系统楼", ["07:00"], { dorm: 40 }),
@@ -158,6 +160,8 @@ const SCHEDULES = {
     ], { college: 0 }),
   ],
   friday: [
+    createService("线路2", "科大佳园", "系统楼", ["07:05", "07:20", "14:00"], { dorm: 20 }),
+    createService("线路2", "系统楼", "科大佳园", ["12:05", "17:35", "21:35"], { college: 0 }),
     createService("线路5", "科大景园东门", "系统楼", ["07:20"], { dorm: 15 }),
     createService("线路5", "系统楼", "科大景园东门", ["17:30"], { college: 0 }),
     createService("线路7", "四号院家属区", "系统楼", ["07:00"], { dorm: 40 }),
@@ -173,6 +177,7 @@ const SCHEDULES = {
     ], { college: 0 }),
   ],
   saturday: [
+    createService("线路2", "科大佳园", "系统楼", ["07:23", "13:55"], { dorm: 20 }),
     createService("线路8", "一号院", "系统楼", ["07:20", "09:30", "11:25", "13:50", "15:30", "18:55"], { dorm: 25 }),
     createService("线路8", "系统楼", "一号院", ["07:50", "10:00", "12:00", "12:35", "16:25", "17:30", "18:25", "21:35", "22:15"], { college: 0 }),
   ],
