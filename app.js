@@ -6,7 +6,7 @@
 
 const COLLEGE_OFFSET_SPECIAL_MINUTES = 7;
 const STOP_STORAGE_KEY = "bus-stop-preference";
-const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-09-10-v7-1";
+const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-09-10-v7-2";
 const UPDATE_NOTICE_DISMISSED_VALUE = "dismissed";
 const UPDATE_NOTICE_EXPIRES_AT = new Date(2026, 8, 23, 0, 0, 0, 0).getTime();
 
@@ -47,6 +47,10 @@ const STOPS = {
     id: "secondCanteen",
     label: "二食堂（去往研究生宿舍）",
   },
+  secondCanteenToCollege: {
+    id: "secondCanteenToCollege",
+    label: "二食堂（去往系统楼）",
+  },
 };
 
 const DAY_PROFILES = {
@@ -68,7 +72,7 @@ const CROWD_RULES = {
 };
 
 const DORM_WALK_LINES = new Set(["线路2", "线路5", "线路7", "线路8"]);
-const ORIGIN_VISIBLE_LINES = new Set(["环线1路", "就餐专线"]);
+const ORIGIN_VISIBLE_LINES = new Set(["环线1路", "环线2路", "就餐专线"]);
 const CIRCULAR_ROUTE_LINES = new Set(["环线1路"]);
 const ADDITIONAL_STOP_IDS = new Set([
   "eastGate",
@@ -78,6 +82,7 @@ const ADDITIONAL_STOP_IDS = new Set([
   "gaochaoNorth",
   "scienceCollege",
   "secondCanteen",
+  "secondCanteenToCollege",
 ]);
 const DORM_WALK_NOTICE = "提醒：这班车的上车点不在宿舍楼下，从宿舍出发需要先步行到对应站点。";
 
@@ -140,6 +145,25 @@ const SCHEDULES = {
     ], {
       college: 0,
       ...DINING_ADDITIONAL_STOP_OFFSETS,
+    }),
+    createService("环线2路", "宿舍", "系统楼", [
+      "07:30", "07:40", "07:50",
+      "08:00", "08:10", "08:20", "08:30", "08:40", "08:50",
+      "09:00", "09:10", "09:20", "09:30", "09:40", "09:50",
+      "10:00", "10:20", "10:30", "10:40",
+      "11:00", "11:20", "11:40",
+      "12:00", "12:20", "12:40",
+      "14:00", "14:10", "14:20", "14:30", "14:40", "14:50",
+      "15:00", "15:10", "15:20", "15:30", "15:40", "15:50",
+      "16:00", "16:10", "16:20", "16:30", "16:35", "16:45", "16:55",
+      "17:05", "17:15", "17:25", "17:35", "17:45", "17:55",
+      "18:05", "18:35", "19:05", "19:35", "20:05", "20:35",
+      "21:05", "21:35", "22:05"
+    ], {
+      dorm: 0,
+      secondCanteenToCollege: 3,
+      laserInstitute: 6,
+      college: 10,
     }),
   ],
   monThu: [

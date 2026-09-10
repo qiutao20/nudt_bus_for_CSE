@@ -80,6 +80,7 @@ function loadAppForTesting() {
     LOOP_ONE_ADDITIONAL_STOP_OFFSETS,
     DINING_ADDITIONAL_STOP_OFFSETS,
     buildTrip,
+    getServicesForDate,
   })`, context);
 }
 
@@ -97,6 +98,7 @@ test("existing production offsets remain unchanged", () => {
 
   assert.equal(app.STOPS.college.label, "系统楼");
   assert.equal(app.STOPS.secondCanteen.label, "二食堂（去往研究生宿舍）");
+  assert.equal(app.STOPS.secondCanteenToCollege.label, "二食堂（去往系统楼）");
   assert.equal(loopOne.stopOffsets.dorm, 0);
   assert.equal(loopOne.stopOffsets.college, 7);
 });
@@ -119,6 +121,7 @@ test("new stop offsets use rounded whole minutes", () => {
 
 test("new boarding points are attached only to their intended services", () => {
   const loopOne = app.SCHEDULES.everyday.find((service) => service.lineLabel === "环线1路");
+  const loopTwo = app.SCHEDULES.everyday.find((service) => service.lineLabel === "环线2路");
   const dining = app.SCHEDULES.everyday.find((service) => service.lineLabel === "就餐专线");
 
   [
@@ -133,10 +136,17 @@ test("new boarding points are attached only to their intended services", () => {
   assert.ok(dining.stopOffsets.scienceCollege !== undefined);
   assert.ok(dining.stopOffsets.secondCanteen !== undefined);
   assert.equal(dining.stopOffsets.gaochaoNorth, undefined);
+  assert.deepEqual(Object.keys(loopTwo.stopOffsets), [
+    "dorm",
+    "secondCanteenToCollege",
+    "laserInstitute",
+    "college",
+  ]);
 });
 
 test("the active bus schedules exactly match the September update", () => {
   const loopOne = app.SCHEDULES.everyday.find((service) => service.lineLabel === "环线1路");
+  const loopTwo = app.SCHEDULES.everyday.find((service) => service.lineLabel === "环线2路");
   const dining = app.SCHEDULES.everyday.find((service) => service.lineLabel === "就餐专线");
 
   assert.deepEqual(Array.from(loopOne.departures), [
@@ -152,16 +162,31 @@ test("the active bus schedules exactly match the September update", () => {
     "11:20", "11:40", "12:00", "12:20", "12:40",
     "16:30", "16:50", "17:10", "17:30", "17:50",
   ]);
+  assert.deepEqual(Array.from(loopTwo.departures), [
+    "07:30", "07:40", "07:50", "08:00", "08:10", "08:20", "08:30", "08:40", "08:50",
+    "09:00", "09:10", "09:20", "09:30", "09:40", "09:50", "10:00", "10:20", "10:30",
+    "10:40", "11:00", "11:20", "11:40", "12:00", "12:20", "12:40", "14:00", "14:10",
+    "14:20", "14:30", "14:40", "14:50", "15:00", "15:10", "15:20", "15:30", "15:40",
+    "15:50", "16:00", "16:10", "16:20", "16:30", "16:35", "16:45", "16:55", "17:05",
+    "17:15", "17:25", "17:35", "17:45", "17:55", "18:05", "18:35", "19:05", "19:35",
+    "20:05", "20:35", "21:05", "21:35", "22:05",
+  ]);
+  assert.deepEqual({ ...loopTwo.stopOffsets }, {
+    dorm: 0,
+    secondCanteenToCollege: 3,
+    laserInstitute: 6,
+    college: 10,
+  });
 });
 
-test("regular line 2 remains published while the renamed loop line is offline", () => {
+test("regular line 2 and the renamed loop line are distinct services", () => {
   const services = Object.values(app.SCHEDULES).flat();
   const monThuLineTwo = app.SCHEDULES.monThu.filter((service) => service.lineLabel === "线路2");
   const fridayLineTwo = app.SCHEDULES.friday.filter((service) => service.lineLabel === "线路2");
   const saturdayLineTwo = app.SCHEDULES.saturday.filter((service) => service.lineLabel === "线路2");
 
   assert.equal(services.some((service) => service.lineLabel === "线路2"), true);
-  assert.equal(services.some((service) => service.lineLabel === "环线2路"), false);
+  assert.equal(services.some((service) => service.lineLabel === "环线2路"), true);
   assert.equal(services.some((service) => service.lineLabel.includes("环线3路")), false);
   assert.deepEqual(Array.from(monThuLineTwo, (service) => Array.from(service.departures)), [
     ["07:05", "07:20", "14:00"],
@@ -176,6 +201,16 @@ test("regular line 2 remains published while the renamed loop line is offline", 
   ]);
   assert.equal(app.SCHEDULES.sunday.some((service) => service.lineLabel === "线路2"), false);
   assert.equal(app.STOPS.gaochaoSouth, undefined);
+});
+
+test("loop line 2 runs Monday through Friday only", () => {
+  const hasLoopTwo = (date) => app.getServicesForDate(date)
+    .some((service) => service.lineLabel === "环线2路");
+
+  assert.equal(hasLoopTwo(new Date(2026, 8, 10)), true);
+  assert.equal(hasLoopTwo(new Date(2026, 8, 11)), true);
+  assert.equal(hasLoopTwo(new Date(2026, 8, 12)), false);
+  assert.equal(hasLoopTwo(new Date(2026, 8, 13)), false);
 });
 
 test("whole-minute offsets produce a zero-second boarding timestamp", () => {
