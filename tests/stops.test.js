@@ -203,7 +203,7 @@ test("regular line 2 and the renamed loop line are distinct services", () => {
   assert.equal(app.STOPS.gaochaoSouth, undefined);
 });
 
-test("loop line 2 runs Monday through Friday only", () => {
+test("loop line 2 runs on non-holiday weekdays only", () => {
   const hasLoopTwo = (date) => app.getServicesForDate(date)
     .some((service) => service.lineLabel === "环线2路");
 
@@ -211,6 +211,8 @@ test("loop line 2 runs Monday through Friday only", () => {
   assert.equal(hasLoopTwo(new Date(2026, 8, 11)), true);
   assert.equal(hasLoopTwo(new Date(2026, 8, 12)), false);
   assert.equal(hasLoopTwo(new Date(2026, 8, 13)), false);
+  assert.equal(hasLoopTwo(new Date(2026, 8, 24)), true);
+  assert.equal(hasLoopTwo(new Date(2026, 8, 25)), false);
 });
 
 test("whole-minute offsets produce a zero-second boarding timestamp", () => {
