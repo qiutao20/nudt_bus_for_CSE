@@ -79,6 +79,8 @@ function loadAppForTesting() {
     SCHEDULES,
     LOOP_ONE_ADDITIONAL_STOP_OFFSETS,
     DINING_ADDITIONAL_STOP_OFFSETS,
+    HOLIDAY_CALENDARS,
+    resolveDayProfile,
     buildTrip,
     getServicesForDate,
   })`, context);
@@ -206,7 +208,7 @@ test("regular line 2 and the renamed loop line are distinct services", () => {
   assert.equal(app.STOPS.gaochaoSouth, undefined);
 });
 
-test("loop line 2 runs on non-holiday weekdays only", () => {
+test("official holidays use the Sunday schedule and adjusted workdays use Monday schedule", () => {
   const hasLoopTwo = (date) => app.getServicesForDate(date)
     .some((service) => service.lineLabel === "环线2路（观光车）");
 
@@ -216,6 +218,19 @@ test("loop line 2 runs on non-holiday weekdays only", () => {
   assert.equal(hasLoopTwo(new Date(2026, 8, 13)), false);
   assert.equal(hasLoopTwo(new Date(2026, 8, 24)), true);
   assert.equal(hasLoopTwo(new Date(2026, 8, 25)), false);
+  assert.equal(hasLoopTwo(new Date(2026, 8, 20)), true);
+  assert.equal(app.resolveDayProfile(new Date(2026, 8, 20)).key, "monThu");
+  assert.equal(app.resolveDayProfile(new Date(2026, 8, 25)).key, "sunday");
+  assert.equal(app.resolveDayProfile(new Date(2026, 9, 10)).key, "monThu");
+});
+
+test("2026 official and 2027 provisional holiday calendars are loaded", () => {
+  assert.equal(app.HOLIDAY_CALENDARS[2026].status, "official");
+  assert.equal(app.HOLIDAY_CALENDARS[2026].adjustedWorkdays.has("2026-09-20"), true);
+  assert.equal(app.HOLIDAY_CALENDARS[2027].status, "provisional");
+  assert.equal(app.HOLIDAY_CALENDARS[2027].holidayDates.has("2027-02-05"), true);
+  assert.equal(app.HOLIDAY_CALENDARS[2027].holidayDates.has("2027-10-07"), true);
+  assert.equal(app.resolveDayProfile(new Date(2027, 0, 1)).key, "sunday");
 });
 
 test("whole-minute offsets produce a zero-second boarding timestamp", () => {

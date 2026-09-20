@@ -6,9 +6,9 @@
 
 const COLLEGE_OFFSET_SPECIAL_MINUTES = 7;
 const STOP_STORAGE_KEY = "bus-stop-preference";
-const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-09-10-v7-3";
+const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-09-20-v7-4";
 const UPDATE_NOTICE_DISMISSED_VALUE = "dismissed";
-const UPDATE_NOTICE_EXPIRES_AT = new Date(2026, 8, 23, 0, 0, 0, 0).getTime();
+const UPDATE_NOTICE_EXPIRES_AT = new Date(2026, 9, 11, 0, 0, 0, 0).getTime();
 
 const STOPS = {
   dorm: {
@@ -60,15 +60,36 @@ const DAY_PROFILES = {
   sunday: { key: "sunday", label: "周日运行表" },
 };
 
-const HOLIDAY_DATES_2026 = new Set([
-  "2026-01-01", "2026-01-02", "2026-01-03",
-  "2026-02-15", "2026-02-16", "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20", "2026-02-21", "2026-02-22", "2026-02-23",
-  "2026-04-04", "2026-04-05", "2026-04-06",
-  "2026-05-01", "2026-05-02", "2026-05-03", "2026-05-04", "2026-05-05",
-  "2026-06-19", "2026-06-20", "2026-06-21",
-  "2026-09-25", "2026-09-26", "2026-09-27",
-  "2026-10-01", "2026-10-02", "2026-10-03", "2026-10-04", "2026-10-05", "2026-10-06", "2026-10-07",
-]);
+const HOLIDAY_CALENDARS = {
+  2026: {
+    status: "official",
+    holidayDates: new Set([
+      "2026-01-01", "2026-01-02", "2026-01-03",
+      "2026-02-15", "2026-02-16", "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20", "2026-02-21", "2026-02-22", "2026-02-23",
+      "2026-04-04", "2026-04-05", "2026-04-06",
+      "2026-05-01", "2026-05-02", "2026-05-03", "2026-05-04", "2026-05-05",
+      "2026-06-19", "2026-06-20", "2026-06-21",
+      "2026-09-25", "2026-09-26", "2026-09-27",
+      "2026-10-01", "2026-10-02", "2026-10-03", "2026-10-04", "2026-10-05", "2026-10-06", "2026-10-07",
+    ]),
+    adjustedWorkdays: new Set([
+      "2026-01-04", "2026-02-14", "2026-02-28",
+      "2026-05-09", "2026-09-20", "2026-10-10",
+    ]),
+  },
+  2027: {
+    status: "provisional",
+    holidayDates: new Set([
+      "2027-01-01",
+      "2027-02-05", "2027-02-06", "2027-02-07", "2027-02-08", "2027-02-09", "2027-02-10", "2027-02-11", "2027-02-12",
+      "2027-04-05",
+      "2027-05-01", "2027-05-02", "2027-05-03", "2027-05-04", "2027-05-05",
+      "2027-06-09", "2027-09-15",
+      "2027-10-01", "2027-10-02", "2027-10-03", "2027-10-04", "2027-10-05", "2027-10-06", "2027-10-07",
+    ]),
+    adjustedWorkdays: new Set(),
+  },
+};
 
 const CROWD_RULES = {
   dorm: {
@@ -425,6 +446,16 @@ function parseDateTimeLocal(value) {
 }
 
 function resolveDayProfile(date) {
+  const dateKey = formatDateKey(date);
+  const calendar = HOLIDAY_CALENDARS[date.getFullYear()];
+
+  if (calendar?.adjustedWorkdays.has(dateKey)) {
+    return DAY_PROFILES.monThu;
+  }
+  if (calendar?.holidayDates.has(dateKey)) {
+    return DAY_PROFILES.sunday;
+  }
+
   const day = date.getDay();
 
   if (day === 0) {
@@ -443,9 +474,7 @@ function getServicesForDate(date) {
   const profile = resolveDayProfile(date);
   const everydayServices = profile.key === "saturday" || profile.key === "sunday"
     ? []
-    : SCHEDULES.everyday.filter((service) => (
-      service.lineLabel !== "环线2路（观光车）" || !HOLIDAY_DATES_2026.has(formatDateKey(date))
-    ));
+    : SCHEDULES.everyday;
   return [...everydayServices, ...SCHEDULES[profile.key]];
 }
 
