@@ -214,10 +214,10 @@ test("official holidays use the Sunday schedule and adjusted workdays use Monday
 
   assert.equal(hasLoopTwo(new Date(2026, 8, 10)), true);
   assert.equal(hasLoopTwo(new Date(2026, 8, 11)), true);
-  assert.equal(hasLoopTwo(new Date(2026, 8, 12)), false);
-  assert.equal(hasLoopTwo(new Date(2026, 8, 13)), false);
+  assert.equal(hasLoopTwo(new Date(2026, 8, 12)), true);
+  assert.equal(hasLoopTwo(new Date(2026, 8, 13)), true);
   assert.equal(hasLoopTwo(new Date(2026, 8, 24)), true);
-  assert.equal(hasLoopTwo(new Date(2026, 8, 25)), false);
+  assert.equal(hasLoopTwo(new Date(2026, 8, 25)), true);
   assert.equal(hasLoopTwo(new Date(2026, 8, 20)), true);
   assert.equal(app.resolveDayProfile(new Date(2026, 8, 20)).key, "monThu");
   assert.equal(app.resolveDayProfile(new Date(2026, 8, 25)).key, "sunday");
@@ -241,4 +241,15 @@ test("whole-minute offsets produce a zero-second boarding timestamp", () => {
   assert.equal(trip.boardingDate.getMinutes(), 31);
   assert.equal(trip.boardingDate.getSeconds(), 0);
   assert.equal(trip.routeLabel, "宿舍 -> 系统楼 -> 宿舍（环线）");
+});
+
+test("holiday loop 2 uses exact departures and weekday stops", () => {
+  const expected = "07:50 08:15 08:40 09:05 09:30 09:55 10:20 10:45 11:20 11:45 12:10 12:35 14:20 14:45 15:10 15:35 16:00 16:25 16:50 17:15 17:40 18:05 18:30 18:55 19:20 19:45 20:10 20:35 21:00 21:25 21:50 22:15".split(" ");
+  for (const date of [new Date(2026, 8, 12), new Date(2026, 8, 13), new Date(2026, 9, 1)]) {
+    const services = app.getServicesForDate(date).filter(service => service.lineLabel.includes("环线2路"));
+    assert.equal(services.length, 1);
+    assert.deepEqual([...services[0].departures], expected);
+    assert.deepEqual({...services[0].stopOffsets}, {dorm: 0, secondCanteenToCollege: 3, laserInstitute: 6, college: 10});
+    assert.ok(!app.getServicesForDate(date).some(service => service.lineLabel === "环线1路"));
+  }
 });

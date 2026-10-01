@@ -6,7 +6,7 @@
 
 const COLLEGE_OFFSET_SPECIAL_MINUTES = 7;
 const STOP_STORAGE_KEY = "bus-stop-preference";
-const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-09-20-v7-5";
+const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-10-01-holiday-loop2";
 const UPDATE_NOTICE_DISMISSED_VALUE = "dismissed";
 const UPDATE_NOTICE_EXPIRES_AT = new Date(2026, 9, 11, 0, 0, 0, 0).getTime();
 
@@ -146,6 +146,12 @@ function createService(lineLabel, origin, destination, departures, stopOffsets) 
     stopOffsets,
   };
 }
+
+const HOLIDAY_LOOP_TWO_SERVICES = [
+  createService("环线2路（观光车）", "宿舍", "系统楼", "07:50 08:15 08:40 09:05 09:30 09:55 10:20 10:45 11:20 11:45 12:10 12:35 14:20 14:45 15:10 15:35 16:00 16:25 16:50 17:15 17:40 18:05 18:30 18:55 19:20 19:45 20:10 20:35 21:00 21:25 21:50 22:15".split(" "), {
+    dorm: 0, secondCanteenToCollege: 3, laserInstitute: 6, college: 10,
+  }),
+];
 
 const SCHEDULES = {
   everyday: [
@@ -475,7 +481,9 @@ function getServicesForDate(date) {
   const everydayServices = profile.key === "saturday" || profile.key === "sunday"
     ? []
     : SCHEDULES.everyday;
-  return [...everydayServices, ...SCHEDULES[profile.key]];
+  const loopTwoServices = profile.key === "saturday" || profile.key === "sunday"
+    ? HOLIDAY_LOOP_TWO_SERVICES : [];
+  return [...everydayServices, ...loopTwoServices, ...SCHEDULES[profile.key]];
 }
 
 function buildDateAtTime(date, hhmm) {
