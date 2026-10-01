@@ -6,7 +6,7 @@
 
 const COLLEGE_OFFSET_SPECIAL_MINUTES = 7;
 const STOP_STORAGE_KEY = "bus-stop-preference";
-const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-10-01-holiday-loop2";
+const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-10-01-holiday-loop2-r2";
 const UPDATE_NOTICE_DISMISSED_VALUE = "dismissed";
 const UPDATE_NOTICE_EXPIRES_AT = new Date(2026, 9, 11, 0, 0, 0, 0).getTime();
 
@@ -31,17 +31,9 @@ const STOPS = {
     id: "militaryCenter",
     label: "军体",
   },
-  laserInstitute: {
-    id: "laserInstitute",
-    label: "激光所",
-  },
   gaochaoNorth: {
     id: "gaochaoNorth",
     label: "高超北侧",
-  },
-  scienceCollege: {
-    id: "scienceCollege",
-    label: "理学院",
   },
   secondCanteen: {
     id: "secondCanteen",
@@ -546,17 +538,11 @@ function buildTripsForDate(date, stopId) {
     .sort((left, right) => left.boardingDate - right.boardingDate);
 }
 
-function getUpcomingTrips(queryDate, stopId, count = 6, horizonDays = 8) {
-  const trips = [];
+function getUpcomingTrips(queryDate, stopId, count = 6) {
   const firstDay = startOfDay(queryDate);
-
-  for (let offset = 0; offset < horizonDays; offset += 1) {
-    trips.push(...buildTripsForDate(addDays(firstDay, offset), stopId));
-  }
-
-  return trips
-    .filter((trip) => trip.boardingDate >= queryDate)
-    .sort((left, right) => left.boardingDate - right.boardingDate)
+  const nextDay = addDays(firstDay, 1);
+  return buildTripsForDate(firstDay, stopId)
+    .filter((trip) => trip.boardingDate >= queryDate && trip.boardingDate < nextDay)
     .slice(0, count);
 }
 
@@ -675,6 +661,21 @@ function renderMainTrip(queryDate, stopId) {
   const trips = getUpcomingTrips(queryDate, stopId, 2);
   const nextTrip = trips[0];
   const secondTrip = trips[1];
+  if (!nextTrip) {
+    elements.selectedStopLabel.textContent = `${STOPS[stopId].label}最近一班`;
+    elements.nextDayLabel.textContent = "今天";
+    elements.nextTime.textContent = "—";
+    elements.nextLineLabel.textContent = "当天已无可乘班次";
+    elements.waitText.textContent = "请查看其他上车点或选择其他日期";
+    elements.tripMeta.textContent = "";
+    elements.tripMeta.hidden = true;
+    elements.walkWarning.classList.add("is-hidden");
+    elements.walkWarning.textContent = "";
+    elements.crowdNote.className = "crowd-note is-hidden";
+    elements.crowdNote.textContent = "";
+    elements.secondaryTrip.textContent = "当天没有更多班次";
+    return;
+  }
   const walkWarning = getWalkWarning(nextTrip, stopId);
 
   elements.selectedStopLabel.textContent = `${STOPS[stopId].label}最近一班`;
@@ -689,7 +690,7 @@ function renderMainTrip(queryDate, stopId) {
   renderCrowdNote(nextTrip);
   elements.secondaryTrip.textContent = secondTrip
     ? `下一班 ${formatTime(secondTrip.boardingDate)} · （${buildDepartureText(secondTrip)}）`
-    : "查询范围内没有更多班次";
+    : "当天没有更多班次";
 }
 
 function createTimelineItem(trip, queryDate, stopId) {

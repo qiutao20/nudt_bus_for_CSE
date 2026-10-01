@@ -83,6 +83,8 @@ function loadAppForTesting() {
     resolveDayProfile,
     buildTrip,
     getServicesForDate,
+    getUpcomingTrips,
+    renderMainTrip,
   })`, context);
 }
 
@@ -252,4 +254,18 @@ test("holiday loop 2 uses exact departures and weekday stops", () => {
     assert.deepEqual({...services[0].stopOffsets}, {dorm: 0, secondCanteenToCollege: 3, laserInstitute: 6, college: 10});
     assert.ok(!app.getServicesForDate(date).some(service => service.lineLabel === "环线1路"));
   }
+});
+
+test("removed boarding stops and same-day-only results", () => {
+  assert.equal(app.STOPS.scienceCollege, undefined);
+  assert.equal(app.STOPS.laserInstitute, undefined);
+  const query = new Date(2026, 9, 1, 21, 50);
+  const trips = app.getUpcomingTrips(query, "dorm", 100);
+  assert.ok(trips.length > 0);
+  assert.ok(trips.every(trip => trip.boardingDate >= query && trip.boardingDate.getDate() === 1));
+  const late = new Date(2026, 9, 1, 23, 59);
+  assert.equal(app.getUpcomingTrips(late, "dorm").length, 0);
+  assert.doesNotThrow(() => app.renderMainTrip(late, "dorm"));
+  assert.equal(app.getUpcomingTrips(new Date(2026, 9, 1, 12), "eastGate").length, 0);
+  assert.doesNotThrow(() => app.renderMainTrip(new Date(2026, 9, 1, 12), "eastGate"));
 });
