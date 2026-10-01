@@ -248,6 +248,9 @@ const elements = {
   queryReferenceText: document.getElementById("queryReferenceText"),
   queryReferenceNote: document.getElementById("queryReferenceNote"),
   queryDateTime: document.getElementById("queryDateTime"),
+  queryDate: document.getElementById("queryDate"),
+  queryHour: document.getElementById("queryHour"),
+  queryMinute: document.getElementById("queryMinute"),
   manualField: document.getElementById("manualField"),
   selectedStopLabel: document.getElementById("selectedStopLabel"),
   nextDayLabel: document.getElementById("nextDayLabel"),
@@ -277,7 +280,15 @@ const state = {
 };
 
 initializeEmailJs();
-elements.queryDateTime.value = formatDateTimeLocal(new Date());
+elements.queryHour.innerHTML = Array.from({ length: 24 }, (_, hour) => {
+  const value = String(hour).padStart(2, "0");
+  return `<option value="${value}">${value}</option>`;
+}).join("");
+elements.queryMinute.innerHTML = Array.from({ length: 60 }, (_, minute) => {
+  const value = String(minute).padStart(2, "0");
+  return `<option value="${value}">${value}</option>`;
+}).join("");
+setQueryDateTime(new Date());
 
 function initializeEmailJs() {
   if (!window.emailjs) {
@@ -405,6 +416,20 @@ function formatShortDateTime(date) {
     day: "numeric",
     weekday: "short",
   })} ${formatTime(date)}`;
+}
+
+function setQueryDateTime(date) {
+  const value = formatDateTimeLocal(date);
+  elements.queryDateTime.value = value;
+  elements.queryDate.value = value.slice(0, 10);
+  elements.queryHour.value = value.slice(11, 13);
+  elements.queryMinute.value = value.slice(14, 16);
+}
+
+function syncQueryDateTime() {
+  elements.queryDateTime.value = elements.queryDate.value
+    ? `${elements.queryDate.value}T${elements.queryHour.value}:${elements.queryMinute.value}`
+    : "";
 }
 
 function formatDateTimeLocal(date) {
@@ -631,6 +656,9 @@ function renderQueryControls(queryDate, profile) {
 
   elements.manualField.classList.toggle("is-hidden", !isManual);
   elements.queryDateTime.disabled = !isManual;
+  elements.queryDate.disabled = !isManual;
+  elements.queryHour.disabled = !isManual;
+  elements.queryMinute.disabled = !isManual;
   elements.activeScheduleLabel.textContent = profile.label;
   elements.queryReferenceText.textContent = state.queryMode === "manual"
     ? formatDateTimeLabel(queryDate)
@@ -820,7 +848,7 @@ function setQueryMode(mode) {
 
   state.queryMode = mode;
   if (mode === "manual" && !elements.queryDateTime.value) {
-    elements.queryDateTime.value = formatDateTimeLocal(new Date());
+    setQueryDateTime(new Date());
   }
   render();
 }
@@ -831,6 +859,13 @@ elements.stopButtons.forEach((button) => {
 
 elements.modeButtons.forEach((button) => {
   button.addEventListener("click", () => setQueryMode(button.dataset.queryMode));
+});
+
+[elements.queryDate, elements.queryHour, elements.queryMinute].forEach((control) => {
+  control.addEventListener("change", () => {
+    syncQueryDateTime();
+    if (state.queryMode === "manual") render();
+  });
 });
 
 elements.queryDateTime.addEventListener("input", () => {

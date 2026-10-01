@@ -35,10 +35,16 @@
           <button class="mode-button" data-query-mode="manual" type="button">手动时间</button>
         </div>
 
-        <label class="manual-field is-hidden" id="manualField">
+        <div class="manual-field is-hidden" id="manualField">
           <span class="field-label">查询时间</span>
-          <input class="time-input" id="queryDateTime" type="datetime-local">
-        </label>
+          <div class="query-datetime-controls">
+            <input class="time-input" id="queryDate" type="date" aria-label="查询日期">
+            <select class="time-input" id="queryHour" aria-label="查询小时（24小时制）"></select>
+            <span aria-hidden="true">:</span>
+            <select class="time-input" id="queryMinute" aria-label="查询分钟"></select>
+          </div>
+          <input id="queryDateTime" type="hidden">
+        </div>
       </div>
 
       <div class="query-meta">
@@ -130,6 +136,6 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="./app.js?v=20261001-holiday-loop2-r2"></script>
+  <script src="./app.js?v=20261001-time24"></script>
 </body>
 </html>

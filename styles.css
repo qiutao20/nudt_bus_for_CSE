@@ -514,3 +514,12 @@ body.notice-open {
     line-height: 1.2;
   }
 }
+
+.query-datetime-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.query-datetime-controls input { flex: 1 1 140px; min-width: 0; }
+.query-datetime-controls select { width: 68px; flex: 0 0 68px; }
