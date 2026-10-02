@@ -142,7 +142,7 @@ function createService(lineLabel, origin, destination, departures, stopOffsets) 
 
 const HOLIDAY_LOOP_TWO_SERVICES = [
   createService("环线2路（观光车）", "宿舍", "系统楼", "07:50 08:15 08:40 09:05 09:30 09:55 10:20 10:45 11:20 11:45 12:10 12:35 14:20 14:45 15:10 15:35 16:00 16:25 16:50 17:15 17:40 18:05 18:30 18:55 19:20 19:45 20:10 20:35 21:00 21:25 21:50 22:15".split(" "), {
-    dorm: 0, secondCanteenToCollege: 3, laserInstitute: 6, college: 10,
+    dorm: 0, secondCanteenToCollege: 3, laserInstitute: 6, college: 8,
   }),
 ];
 
@@ -194,7 +194,7 @@ const SCHEDULES = {
       dorm: 0,
       secondCanteenToCollege: 3,
       laserInstitute: 6,
-      college: 10,
+      college: 8,
     }),
   ],
   monThu: [

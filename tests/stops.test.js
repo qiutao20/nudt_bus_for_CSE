@@ -181,7 +181,7 @@ test("the active bus schedules exactly match the September update", () => {
     dorm: 0,
     secondCanteenToCollege: 3,
     laserInstitute: 6,
-    college: 10,
+    college: 8,
   });
 });
 
@@ -251,7 +251,7 @@ test("holiday loop 2 uses exact departures and weekday stops", () => {
     const services = app.getServicesForDate(date).filter(service => service.lineLabel.includes("环线2路"));
     assert.equal(services.length, 1);
     assert.deepEqual([...services[0].departures], expected);
-    assert.deepEqual({...services[0].stopOffsets}, {dorm: 0, secondCanteenToCollege: 3, laserInstitute: 6, college: 10});
+    assert.deepEqual({...services[0].stopOffsets}, {dorm: 0, secondCanteenToCollege: 3, laserInstitute: 6, college: 8});
     assert.ok(!app.getServicesForDate(date).some(service => service.lineLabel === "环线1路"));
   }
 });
@@ -287,4 +287,13 @@ test("holidays run only loop 2 while weekends and adjusted workdays stay distinc
   assert.ok(!sunday.includes("线路2"));
   assert.ok(sunday.some(label => label.includes("环线2路")));
   assert.ok(app.getServicesForDate(new Date(2026, 9, 10)).some(service => service.lineLabel === "线路8"));
+});
+
+test("loop 2 system-building boarding is eight minutes after departure", () => {
+  for (const date of [new Date(2026, 8, 10), new Date(2026, 8, 12), new Date(2026, 9, 2)]) {
+    const service = app.getServicesForDate(date).find(service => service.lineLabel.includes("环线2路"));
+    const trip = app.buildTrip(service, "07:50", date, "college");
+    assert.equal(trip.boardingDate.getHours(), 7);
+    assert.equal(trip.boardingDate.getMinutes(), 58);
+  }
 });
