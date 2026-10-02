@@ -537,7 +537,7 @@ body.notice-open {
   min-height: 44px;
   padding: 4px 0 4px 8px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.4;
   text-decoration: none;
   white-space: nowrap;
