@@ -50,6 +50,7 @@ const DAY_PROFILES = {
   friday: { key: "friday", label: "周五运行表" },
   saturday: { key: "saturday", label: "周六运行表" },
   sunday: { key: "sunday", label: "周日运行表" },
+  holiday: { key: "holiday", label: "节假日运行表" },
 };
 
 const HOLIDAY_CALENDARS = {
@@ -476,7 +477,7 @@ function resolveDayProfile(date) {
     return DAY_PROFILES.monThu;
   }
   if (calendar?.holidayDates.has(dateKey)) {
-    return DAY_PROFILES.sunday;
+    return DAY_PROFILES.holiday;
   }
 
   const day = date.getDay();
@@ -495,6 +496,7 @@ function resolveDayProfile(date) {
 
 function getServicesForDate(date) {
   const profile = resolveDayProfile(date);
+  if (profile.key === "holiday") return [...HOLIDAY_LOOP_TWO_SERVICES];
   const everydayServices = profile.key === "saturday" || profile.key === "sunday"
     ? []
     : SCHEDULES.everyday;

@@ -210,7 +210,7 @@ test("regular line 2 and the renamed loop line are distinct services", () => {
   assert.equal(app.STOPS.gaochaoSouth, undefined);
 });
 
-test("official holidays use the Sunday schedule and adjusted workdays use Monday schedule", () => {
+test("official holidays use the holiday schedule and adjusted workdays use Monday schedule", () => {
   const hasLoopTwo = (date) => app.getServicesForDate(date)
     .some((service) => service.lineLabel === "环线2路（观光车）");
 
@@ -222,7 +222,7 @@ test("official holidays use the Sunday schedule and adjusted workdays use Monday
   assert.equal(hasLoopTwo(new Date(2026, 8, 25)), true);
   assert.equal(hasLoopTwo(new Date(2026, 8, 20)), true);
   assert.equal(app.resolveDayProfile(new Date(2026, 8, 20)).key, "monThu");
-  assert.equal(app.resolveDayProfile(new Date(2026, 8, 25)).key, "sunday");
+  assert.equal(app.resolveDayProfile(new Date(2026, 8, 25)).key, "holiday");
   assert.equal(app.resolveDayProfile(new Date(2026, 9, 10)).key, "monThu");
 });
 
@@ -232,7 +232,7 @@ test("2026 official and 2027 provisional holiday calendars are loaded", () => {
   assert.equal(app.HOLIDAY_CALENDARS[2027].status, "provisional");
   assert.equal(app.HOLIDAY_CALENDARS[2027].holidayDates.has("2027-02-05"), true);
   assert.equal(app.HOLIDAY_CALENDARS[2027].holidayDates.has("2027-10-07"), true);
-  assert.equal(app.resolveDayProfile(new Date(2027, 0, 1)).key, "sunday");
+  assert.equal(app.resolveDayProfile(new Date(2027, 0, 1)).key, "holiday");
 });
 
 test("whole-minute offsets produce a zero-second boarding timestamp", () => {
@@ -268,4 +268,23 @@ test("removed boarding stops and same-day-only results", () => {
   assert.doesNotThrow(() => app.renderMainTrip(late, "dorm"));
   assert.equal(app.getUpcomingTrips(new Date(2026, 9, 1, 12), "eastGate").length, 0);
   assert.doesNotThrow(() => app.renderMainTrip(new Date(2026, 9, 1, 12), "eastGate"));
+});
+
+test("holidays run only loop 2 while weekends and adjusted workdays stay distinct", () => {
+  for (const date of [new Date(2026, 9, 1), new Date(2026, 9, 3), new Date(2026, 9, 4), new Date(2027, 0, 1)]) {
+    const services = app.getServicesForDate(date);
+    assert.equal(services.length, 1);
+    assert.ok(services[0].lineLabel.includes("环线2路"));
+    assert.equal(services[0].departures.length, 32);
+    assert.equal(app.resolveDayProfile(date).key, "holiday");
+  }
+  const saturday = app.getServicesForDate(new Date(2026, 8, 12)).map(service => service.lineLabel);
+  assert.ok(saturday.includes("线路2"));
+  assert.ok(saturday.includes("线路8"));
+  assert.ok(saturday.some(label => label.includes("环线2路")));
+  const sunday = app.getServicesForDate(new Date(2026, 8, 13)).map(service => service.lineLabel);
+  assert.ok(sunday.includes("线路8"));
+  assert.ok(!sunday.includes("线路2"));
+  assert.ok(sunday.some(label => label.includes("环线2路")));
+  assert.ok(app.getServicesForDate(new Date(2026, 9, 10)).some(service => service.lineLabel === "线路8"));
 });
