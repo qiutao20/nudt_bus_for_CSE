@@ -6,9 +6,9 @@
 
 const COLLEGE_OFFSET_SPECIAL_MINUTES = 7;
 const STOP_STORAGE_KEY = "bus-stop-preference";
-const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-10-01-holiday-loop2-r2";
+const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-10-15-sightseeing-routes";
 const UPDATE_NOTICE_DISMISSED_VALUE = "dismissed";
-const UPDATE_NOTICE_EXPIRES_AT = new Date(2026, 9, 11, 0, 0, 0, 0).getTime();
+const UPDATE_NOTICE_EXPIRES_AT = new Date(2026, 9, 25, 0, 0, 0, 0).getTime();
 
 const STOPS = {
   dorm: {
@@ -26,14 +26,6 @@ const STOPS = {
   northGate: {
     id: "northGate",
     label: "北门",
-  },
-  militaryCenter: {
-    id: "militaryCenter",
-    label: "军体",
-  },
-  gaochaoNorth: {
-    id: "gaochaoNorth",
-    label: "高超北侧",
   },
   secondCanteen: {
     id: "secondCanteen",
@@ -96,14 +88,12 @@ const CROWD_RULES = {
 };
 
 const DORM_WALK_LINES = new Set(["线路2", "线路5", "线路7", "线路8"]);
-const ORIGIN_VISIBLE_LINES = new Set(["环线1路", "环线2路（观光车）", "就餐专线"]);
+const ORIGIN_VISIBLE_LINES = new Set(["环线1路", "观光车1路", "观光车2路", "就餐专线"]);
 const CIRCULAR_ROUTE_LINES = new Set(["环线1路"]);
 const ADDITIONAL_STOP_IDS = new Set([
   "eastGate",
   "northGate",
-  "militaryCenter",
   "laserInstitute",
-  "gaochaoNorth",
   "scienceCollege",
   "secondCanteen",
   "secondCanteenToCollege",
@@ -115,10 +105,8 @@ const DORM_WALK_NOTICE = "提醒：这班车的上车点不在宿舍楼下，从
 // production.
 const LOOP_ONE_ADDITIONAL_STOP_OFFSETS = {
   eastGate: 1,
-  militaryCenter: 3,
   laserInstitute: 5,
   northGate: 6,
-  gaochaoNorth: 8,
   scienceCollege: 8,
   secondCanteen: 11,
 };
@@ -140,10 +128,17 @@ function createService(lineLabel, origin, destination, departures, stopOffsets) 
   };
 }
 
+const HOLIDAY_SIGHTSEEING_DEPARTURES = "07:50 08:15 08:40 09:05 09:30 09:55 10:20 10:45 11:20 11:45 12:10 12:35 14:20 14:45 15:10 15:35 16:00 16:25 16:50 17:15 17:40 18:05 18:30 18:55 19:20 19:45 20:10 20:35 21:00 21:25 21:50 22:15".split(" ");
+
 const HOLIDAY_LOOP_TWO_SERVICES = [
-  createService("环线2路（观光车）", "宿舍", "系统楼", "07:50 08:15 08:40 09:05 09:30 09:55 10:20 10:45 11:20 11:45 12:10 12:35 14:20 14:45 15:10 15:35 16:00 16:25 16:50 17:15 17:40 18:05 18:30 18:55 19:20 19:45 20:10 20:35 21:00 21:25 21:50 22:15".split(" "), {
-    dorm: 0, secondCanteenToCollege: 3, laserInstitute: 6, college: 8,
-  }),
+  createService("观光车1路", "宿舍", "系统楼",
+    HOLIDAY_SIGHTSEEING_DEPARTURES.filter((_, index) => index % 2 === 0), {
+      dorm: 0, secondCanteenToCollege: 3, laserInstitute: 6, college: 8,
+    }),
+  createService("观光车2路", "宿舍", "二食堂（去往研究生宿舍）",
+    HOLIDAY_SIGHTSEEING_DEPARTURES.filter((_, index) => index % 2 === 1), {
+      dorm: 0, college: 5, secondCanteen: 8,
+    }),
 ];
 
 const SCHEDULES = {
@@ -152,13 +147,13 @@ const SCHEDULES = {
       "07:30", "07:40", "07:50",
       "08:00", "08:10", "08:20",
       "08:30", "08:40", "08:50",
-      "09:00", "09:10", "09:20", "09:30", "09:40", "09:50",
+      "09:00", "09:10", "09:20", "09:40", "09:50",
       "10:00", "10:20", "10:30", "10:40",
       "11:00", "11:20", "11:40",
       "12:00", "12:20", "12:40",
       "14:00", "14:10", "14:20", "14:30", "14:40", "14:50",
-      "15:00", "15:10", "15:20", "15:30", "15:40", "15:50",
-      "16:00", "16:10", "16:20", "16:30", "16:40",
+      "15:00", "15:10", "15:30", "15:50",
+      "16:00", "16:10", "16:20", "16:30", "16:40", "16:50",
       "17:00", "17:10", "17:20", "17:30", "17:40",
       "18:00", "18:20", "18:40",
       "19:00", "19:20", "19:40",
@@ -177,25 +172,8 @@ const SCHEDULES = {
       college: 0,
       ...DINING_ADDITIONAL_STOP_OFFSETS,
     }),
-    createService("环线2路（观光车）", "宿舍", "系统楼", [
-      "07:35", "07:45", "07:55",
-      "08:05", "08:15", "08:25", "08:35", "08:45", "08:55",
-      "09:05", "09:15", "09:25", "09:35", "09:45",
-      "10:05", "10:15", "10:35", "10:45", "10:55",
-      "11:05", "11:15", "11:25", "11:35", "11:45", "11:55",
-      "12:05", "12:15", "12:25", "12:35",
-      "14:05", "14:15", "14:25", "14:35", "14:45", "14:55",
-      "15:15", "15:25", "15:35", "15:45",
-      "16:05", "16:15", "16:25", "16:35", "16:45", "16:55",
-      "17:05", "17:15", "17:25", "17:35", "17:45", "17:55",
-      "18:05", "18:35", "19:05", "19:35", "20:05", "20:35",
-      "21:05", "21:35", "22:05"
-    ], {
-      dorm: 0,
-      secondCanteenToCollege: 3,
-      laserInstitute: 6,
-      college: 8,
-    }),
+    createService("观光车1路", "宿舍", "系统楼", "07:35 07:55 08:15 08:35 08:55 09:15 09:35 10:05 10:35 10:55 11:15 11:35 11:55 12:15 12:25 12:35 14:15 14:35 14:55 15:25 15:45 16:15 16:35 16:55 17:15 17:35 17:55 18:35 19:05 19:35 20:05 20:35 21:05 21:35 22:25".split(" "), { dorm: 0, secondCanteenToCollege: 3, laserInstitute: 6, college: 8 }),
+    createService("观光车2路", "宿舍", "二食堂（去往研究生宿舍）", "07:45 08:05 08:25 08:45 09:05 09:25 09:45 10:15 10:45 11:05 11:25 11:45 12:05 14:05 14:25 14:45 15:15 15:35 16:05 16:25 16:45 17:05 17:25 17:45 18:05".split(" "), { dorm: 0, college: 5, secondCanteen: 8 }),
   ],
   monThu: [
     createService("线路2", "科大佳园", "系统楼", ["07:05", "07:20", "14:00"], { dorm: 20 }),
