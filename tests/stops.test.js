@@ -85,6 +85,7 @@ function loadAppForTesting() {
     getServicesForDate,
     getUpcomingTrips,
     renderMainTrip,
+    formatTripLineHtml,
   })`, context);
 }
 
@@ -310,4 +311,13 @@ test("sightseeing routes have exact departures and direction-specific boarding t
   }
   assert.equal(second.stopOffsets.secondCanteenToCollege, undefined);
   assert.equal(second.stopOffsets.laserInstitute, undefined);
+});
+
+
+test("shuttle display names highlight only the turning character and escape route text", () => {
+  for (const [lineLabel, number, direction] of [["观光车1路", 1, "左"], ["观光车2路", 2, "右"]]) {
+    assert.equal(app.formatTripLineHtml({lineLabel, routeLabel: "宿舍 -> 系统楼"}),
+      `接驳车${number}路（一食堂路口<span class="turn-direction">${direction}</span>拐） · 宿舍 -&gt; 系统楼`);
+  }
+  assert.equal(app.formatTripLineHtml({lineLabel: "<线路>", routeLabel: "<img>"}), "&lt;线路&gt; · &lt;img&gt;");
 });

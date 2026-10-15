@@ -665,6 +665,17 @@ function renderCrowdNote(trip) {
   elements.crowdNote.textContent = trip.crowd.text;
 }
 
+function formatTripLineHtml(trip) {
+  const escapeHtml = (text) => String(text).replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  })[character]);
+  const names = {
+    "观光车1路": '接驳车1路（一食堂路口<span class="turn-direction">左</span>拐）',
+    "观光车2路": '接驳车2路（一食堂路口<span class="turn-direction">右</span>拐）',
+  };
+  return `${names[trip.lineLabel] || escapeHtml(trip.lineLabel)} · ${escapeHtml(trip.routeLabel)}`;
+}
+
 function renderMainTrip(queryDate, stopId) {
   const trips = getUpcomingTrips(queryDate, stopId, 2);
   const nextTrip = trips[0];
@@ -689,7 +700,7 @@ function renderMainTrip(queryDate, stopId) {
   elements.selectedStopLabel.textContent = `${STOPS[stopId].label}最近一班`;
   elements.nextDayLabel.textContent = getReferenceDayLabel(nextTrip.boardingDate, queryDate);
   elements.nextTime.textContent = formatTime(nextTrip.boardingDate);
-  elements.nextLineLabel.textContent = `${nextTrip.lineLabel} · ${nextTrip.routeLabel}`;
+  elements.nextLineLabel.innerHTML = formatTripLineHtml(nextTrip);
   elements.waitText.textContent = `${describeWait(queryDate, nextTrip.boardingDate)} · ${buildBoardingText(nextTrip, stopId)} · ${buildDepartureText(nextTrip)}`;
   elements.tripMeta.textContent = "";
   elements.tripMeta.hidden = true;
@@ -722,7 +733,7 @@ function createTimelineItem(trip, queryDate, stopId) {
 
   time.textContent = formatTime(trip.boardingDate);
   day.textContent = getReferenceDayLabel(trip.boardingDate, queryDate);
-  line.textContent = `${trip.lineLabel} · ${trip.routeLabel}`;
+  line.innerHTML = formatTripLineHtml(trip);
   meta.textContent = `（${buildDepartureText(trip)}） · ${buildBoardingText(trip, stopId)}`;
   warning.textContent = getWalkWarning(trip, stopId);
   wait.textContent = describeWait(queryDate, trip.boardingDate);

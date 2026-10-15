@@ -544,3 +544,7 @@ body.notice-open {
 }
 .star-link:hover { color: var(--brand); text-decoration: underline; }
 .star-link:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-radius: 4px; }
+
+.turn-direction {
+  color: #dc2626;
+}
