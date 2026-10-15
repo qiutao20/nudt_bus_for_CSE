@@ -759,7 +759,7 @@ function createTimelineItem(trip, queryDate, stopId) {
 }
 
 function renderTimeline(queryDate, stopId) {
-  const trips = getUpcomingTrips(queryDate, stopId, 6);
+  const trips = getUpcomingTrips(queryDate, stopId, 7).slice(1);
 
   elements.timeline.innerHTML = "";
   trips.forEach((trip) => {

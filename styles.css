@@ -548,3 +548,44 @@ body.notice-open {
 .turn-direction {
   color: #dc2626;
 }
+
+/* Shared navigation between the two commuting tools. */
+.commute-nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 16px;
+  padding: 4px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+}
+
+.commute-nav a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 10px 6px;
+  border-radius: 10px;
+  color: var(--brand);
+  font-size: clamp(13px, 3.5vw, 16px);
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  text-decoration: none;
+}
+
+.commute-nav a:hover {
+  background: var(--highlight-soft);
+}
+
+.commute-nav a[aria-current="page"] {
+  color: #fff;
+  background: var(--brand);
+}
+
+.commute-nav a:focus-visible {
+  outline: 3px solid var(--highlight);
+  outline-offset: 2px;
+}

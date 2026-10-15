@@ -11,10 +11,14 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="./icon.svg">
-  <link rel="stylesheet" href="./styles.css?v=20261015-shuttle-names">
+  <link rel="stylesheet" href="./styles.css?v=20261015-commute-nav">
 </head>
 <body>
   <main class="app-shell">
+    <nav class="commute-nav" aria-label="通勤网站切换">
+      <a href="https://nudtbus.online/">一三号院间通勤</a>
+      <a href="https://bus2.qiutao20.online/" aria-current="page">三号院内通勤</a>
+    </nav>
     <section class="hero">
       <div class="hero-top">
         <p class="eyebrow">班车查询</p>
@@ -137,6 +141,6 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="./app.js?v=20261015-shuttle-names"></script>
+  <script src="./app.js?v=20261015-later-trips"></script>
 </body>
 </html>
