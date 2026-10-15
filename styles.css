@@ -493,14 +493,40 @@ body.notice-open {
     padding: 18px;
   }
 
-  .hero-head,
   .next-top,
   .timeline-head {
     flex-direction: column;
   }
 
+  .hero-head {
+    gap: 12px;
+  }
+
+  .hero-head > :first-child {
+    min-width: 0;
+  }
+
   .clock-card {
-    width: 100%;
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-width: 108px;
+    padding: 12px;
+    border-radius: var(--radius-md);
+  }
+
+  .clock-time {
+    font-size: 1.55rem;
+    letter-spacing: 0;
+  }
+
+  .clock-date {
+    font-size: 0.78rem;
+    line-height: 1.35;
+    text-align: center;
+    white-space: nowrap;
   }
 
   .update-notice-actions {
