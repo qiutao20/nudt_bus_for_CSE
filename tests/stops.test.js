@@ -235,7 +235,7 @@ test("whole-minute offsets produce a zero-second boarding timestamp", () => {
 
 test("holiday sightseeing routes alternate without changing the combined timetable", () => {
   const expected = "07:50 08:15 08:40 09:05 09:30 09:55 10:20 10:45 11:20 11:45 12:10 12:35 14:20 14:45 15:10 15:35 16:00 16:25 16:50 17:15 17:40 18:05 18:30 18:55 19:20 19:45 20:10 20:35 21:00 21:25 21:50 22:15".split(" ");
-  for (const date of [new Date(2026, 8, 12), new Date(2026, 8, 13), new Date(2026, 9, 1)]) {
+  for (const date of [new Date(2026, 9, 1)]) {
     const services = app.getServicesForDate(date).filter(service => service.lineLabel.startsWith("观光车"));
     assert.equal(services.length, 2);
     assert.deepEqual([...services[0].departures], expected.filter((_, index) => index % 2 === 0));
@@ -320,4 +320,12 @@ test("shuttle display names highlight only the turning character and escape rout
       `接驳车${number}路（一食堂路口<span class="turn-direction">${direction}</span>拐） · 宿舍 -&gt; 系统楼`);
   }
   assert.equal(app.formatTripLineHtml({lineLabel: "<线路>", routeLabel: "<img>"}), "&lt;线路&gt; · &lt;img&gt;");
+});
+
+test("both weekend days follow the posted departure times for each shuttle", () => {
+  for (const date of [new Date(2026, 10, 14), new Date(2026, 10, 15)]) {
+    const services = app.getServicesForDate(date).filter(service => service.lineLabel.startsWith("观光车"));
+    assert.deepEqual([...services[0].departures], "07:50 08:30 09:10 09:50 10:30 11:10 11:50 12:30 14:40 15:20 16:00 16:40 17:25 17:50 18:15 18:40 19:05 19:30 19:55 20:20 20:45 21:10 21:35 22:00 22:25".split(" "));
+    assert.deepEqual([...services[1].departures], "08:10 08:50 09:30 10:10 10:50 11:30 12:10 14:20 15:00 15:40 16:20 17:00".split(" "));
+  }
 });

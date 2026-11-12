@@ -141,6 +141,11 @@ const HOLIDAY_LOOP_TWO_SERVICES = [
     }),
 ];
 
+const WEEKEND_SHUTTLE_SERVICES = [
+  { ...HOLIDAY_LOOP_TWO_SERVICES[0], departures: "07:50 08:30 09:10 09:50 10:30 11:10 11:50 12:30 14:40 15:20 16:00 16:40 17:25 17:50 18:15 18:40 19:05 19:30 19:55 20:20 20:45 21:10 21:35 22:00 22:25".split(" ") },
+  { ...HOLIDAY_LOOP_TWO_SERVICES[1], departures: "08:10 08:50 09:30 10:10 10:50 11:30 12:10 14:20 15:00 15:40 16:20 17:00".split(" ") },
+];
+
 const SCHEDULES = {
   everyday: [
     createService("环线1路", "宿舍", "系统楼", [
@@ -479,7 +484,7 @@ function getServicesForDate(date) {
     ? []
     : SCHEDULES.everyday;
   const loopTwoServices = profile.key === "saturday" || profile.key === "sunday"
-    ? HOLIDAY_LOOP_TWO_SERVICES : [];
+    ? WEEKEND_SHUTTLE_SERVICES : [];
   return [...everydayServices, ...loopTwoServices, ...SCHEDULES[profile.key]];
 }
 
