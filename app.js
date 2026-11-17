@@ -6,9 +6,9 @@
 
 const COLLEGE_OFFSET_SPECIAL_MINUTES = 7;
 const STOP_STORAGE_KEY = "bus-stop-preference";
-const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-10-15-sightseeing-routes";
+const UPDATE_NOTICE_STORAGE_KEY = "bus-update-notice-2026-11-14-weekend-shuttle";
 const UPDATE_NOTICE_DISMISSED_VALUE = "dismissed";
-const UPDATE_NOTICE_EXPIRES_AT = new Date(2026, 9, 25, 0, 0, 0, 0).getTime();
+const UPDATE_NOTICE_EXPIRES_AT = new Date(2026, 10, 24, 0, 0, 0, 0).getTime();
 
 const STOPS = {
   dorm: {
